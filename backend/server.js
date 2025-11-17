@@ -24,17 +24,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // 👤 MÜŞTERİ İŞLEMLERİ
 // ============================================
 
-// Tüm müşterileri getir
+// Tüm müşterileri getir (arac_islemler tablosundan unique plakalar)
 app.get('/api/musteriler', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT m.*, 
-             COUNT(a.id) as toplam_islem,
-             MAX(a.gelis_tarihi) as son_gelis
-      FROM musteriler m
-      LEFT JOIN arac_islemler a ON m.id = a.musteri_id
-      GROUP BY m.id
-      ORDER BY m.kayit_tarihi DESC
+      SELECT 
+        ROW_NUMBER() OVER (ORDER BY MIN(gelis_tarihi)) as id,
+        plaka,
+        MIN(gelis_tarihi) as kayit_tarihi,
+        SUM(odenen_tutar) as toplam_harcama,
+        SUM(kalan_tutar) as aktif_bakiye,
+        NULL as notlar,
+        COUNT(*) as toplam_islem,
+        MAX(gelis_tarihi) as son_gelis
+      FROM arac_islemler
+      GROUP BY plaka
+      ORDER BY MIN(gelis_tarihi) DESC
     `);
     res.json(result.rows);
   } catch (error) {
@@ -50,8 +55,7 @@ app.get('/api/musteriler/:id', async (req, res) => {
     const musteri = await pool.query('SELECT * FROM musteriler WHERE id = $1', [id]);
     const araclar = await pool.query(
       `SELECT id, musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, 
-              kalan_tutar, odeme_yontemi, notlar, durum,
-              timezone('Europe/Istanbul', gelis_tarihi) as gelis_tarihi
+              kalan_tutar, odeme_yontemi, notlar, durum, gelis_tarihi
        FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC`,
       [id]
     );
@@ -68,11 +72,11 @@ app.get('/api/musteriler/:id', async (req, res) => {
 // Yeni müşteri ekle
 app.post('/api/musteriler', async (req, res) => {
   try {
-    const { ad_soyad, telefon, notlar } = req.body;
+    const { plaka, notlar } = req.body;
     
     const result = await pool.query(
-      'INSERT INTO musteriler (ad_soyad, telefon, notlar) VALUES ($1, $2, $3) RETURNING *',
-      [ad_soyad, telefon, notlar]
+      'INSERT INTO musteriler (plaka, notlar) VALUES ($1, $2) RETURNING *',
+      [plaka, notlar]
     );
     
     res.status(201).json(result.rows[0]);
@@ -85,11 +89,11 @@ app.post('/api/musteriler', async (req, res) => {
 app.put('/api/musteriler/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { ad_soyad, telefon, notlar } = req.body;
+    const { plaka, notlar } = req.body;
     
     const result = await pool.query(
-      'UPDATE musteriler SET ad_soyad = $1, telefon = $2, notlar = $3 WHERE id = $4 RETURNING *',
-      [ad_soyad, telefon, notlar, id]
+      'UPDATE musteriler SET plaka = $1, notlar = $2 WHERE id = $3 RETURNING *',
+      [plaka, notlar, id]
     );
     
     res.json(result.rows[0]);
@@ -119,11 +123,11 @@ app.delete('/api/musteriler/:id', async (req, res) => {
   }
 });
 
-// Telefona göre müşteri ara
-app.get('/api/musteriler/telefon/:telefon', async (req, res) => {
+// Plakaya göre müşteri ara
+app.get('/api/musteriler/plaka/:plaka', async (req, res) => {
   try {
-    const { telefon } = req.params;
-    const result = await pool.query('SELECT * FROM musteriler WHERE telefon LIKE $1', [`%${telefon}%`]);
+    const { plaka } = req.params;
+    const result = await pool.query('SELECT * FROM musteriler WHERE plaka LIKE $1', [`%${plaka}%`]);
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -140,9 +144,8 @@ app.get('/api/islemler', async (req, res) => {
     const result = await pool.query(`
       SELECT a.id, a.musteri_id, a.plaka, a.marka, a.model, a.hizmet_turu, 
              a.tutar, a.odenen_tutar, a.kalan_tutar, a.odeme_yontemi, 
-             a.notlar, a.durum,
-             timezone('Europe/Istanbul', a.gelis_tarihi) as gelis_tarihi,
-             m.ad_soyad, m.telefon
+             a.notlar, a.durum, a.gelis_tarihi,
+             m.plaka as musteri_plaka
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       ORDER BY a.gelis_tarihi DESC
@@ -162,9 +165,8 @@ app.get('/api/islemler/tarih', async (req, res) => {
     let query = `
       SELECT a.id, a.musteri_id, a.plaka, a.marka, a.model, a.hizmet_turu, 
              a.tutar, a.odenen_tutar, a.kalan_tutar, a.odeme_yontemi, 
-             a.notlar, a.durum,
-             timezone('Europe/Istanbul', a.gelis_tarihi) as gelis_tarihi,
-             m.ad_soyad, m.telefon
+             a.notlar, a.durum, a.gelis_tarihi,
+             m.plaka as musteri_plaka
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       WHERE 1=1
@@ -548,11 +550,27 @@ app.get('/api/raporlar/gunluk', async (req, res) => {
       [selectedDate]
     );
     
+    // Durum özeti
+    const durumlar = await pool.query(
+      `SELECT durum, COUNT(*) as adet
+       FROM arac_islemler
+       WHERE DATE(gelis_tarihi) = $1
+       GROUP BY durum`,
+      [selectedDate]
+    );
+    
+    // Durum özetini obje formatına çevir
+    const durumOzet = {};
+    durumlar.rows.forEach(row => {
+      durumOzet[row.durum] = parseInt(row.adet);
+    });
+    
     res.json({
       tarih: selectedDate,
       genel: gelir.rows[0],
       hizmetler: hizmetler.rows,
-      odemeler: odemeler.rows
+      odemeler: odemeler.rows,
+      durum_ozet: durumOzet
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -661,11 +679,23 @@ app.get('/api/raporlar/dashboard', async (req, res) => {
       `SELECT COALESCE(SUM(kalan_tutar), 0) as toplam FROM arac_islemler WHERE kalan_tutar > 0`
     );
     
+    // Bugünkü durum özeti
+    const durumOzeti = await pool.query(
+      `SELECT 
+        COUNT(*) FILTER (WHERE DATE(gelis_tarihi) = CURRENT_DATE) as bugun_arac,
+        COALESCE(SUM(odenen_tutar) FILTER (WHERE DATE(gelis_tarihi) = CURRENT_DATE), 0) as bugun_gelir,
+        COUNT(*) FILTER (WHERE durum = 'Bekliyor' AND DATE(gelis_tarihi) = CURRENT_DATE) as bekliyor,
+        COUNT(*) FILTER (WHERE durum = 'İşlemde' AND DATE(gelis_tarihi) = CURRENT_DATE) as islemde,
+        COUNT(*) FILTER (WHERE durum = 'Teslim edildi' AND DATE(gelis_tarihi) = CURRENT_DATE) as teslim
+       FROM arac_islemler`
+    );
+    
     res.json({
       bugun: bugun.rows[0],
       bu_ay: buay.rows[0],
       bekleyen_islem: bekleyen.rows[0].adet,
-      toplam_borc: borclar.rows[0].toplam
+      toplam_borc: borclar.rows[0].toplam,
+      durum_ozeti: durumOzeti.rows[0]
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -770,6 +800,72 @@ app.get('/api/giderler/ozet', async (req, res) => {
     `);
     
     res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================
+// 📝 NOT İŞLEMLERİ
+// ============================================
+
+// Tüm notları getir
+app.get('/api/notlar', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT * FROM notlar 
+      ORDER BY guncelleme_tarihi DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Yeni not ekle
+app.post('/api/notlar', async (req, res) => {
+  try {
+    const { baslik, icerik, renk } = req.body;
+    
+    const result = await pool.query(
+      `INSERT INTO notlar (baslik, icerik, renk) 
+       VALUES ($1, $2, $3) 
+       RETURNING *`,
+      [baslik, icerik, renk || 'yellow']
+    );
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Not güncelle
+app.put('/api/notlar/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { baslik, icerik, renk } = req.body;
+    
+    const result = await pool.query(
+      `UPDATE notlar 
+       SET baslik = $1, icerik = $2, renk = $3, guncelleme_tarihi = CURRENT_TIMESTAMP
+       WHERE id = $4 
+       RETURNING *`,
+      [baslik, icerik, renk, id]
+    );
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Not sil
+app.delete('/api/notlar/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM notlar WHERE id = $1', [id]);
+    res.json({ message: 'Not silindi' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

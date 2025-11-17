@@ -16,10 +16,11 @@ import {
 import Dashboard from './pages/Dashboard';
 import YeniIslem from './pages/YeniIslem';
 import Islemler from './pages/Islemler';
-import Raporlar from './pages/Raporlar';
+import Giderler from './pages/Giderler';
 import BorcTakip from './pages/BorcTakip';
 import Hizmetler from './pages/Hizmetler';
 import MusteriListesi from './pages/MusteriListesi';
+import Notlar from './pages/Notlar';
 
 // Dark tema oluştur
 const darkTheme = createTheme({
@@ -185,9 +186,10 @@ function App() {
               <Route path="/yeni-islem" element={<YeniIslem />} />
               <Route path="/islemler" element={<Islemler />} />
               <Route path="/borc-takip" element={<BorcTakip />} />
-              <Route path="/raporlar" element={<Raporlar />} />
+              <Route path="/giderler" element={<Giderler />} />
               <Route path="/hizmetler" element={<Hizmetler />} />
               <Route path="/musteri-listesi" element={<MusteriListesi />} />
+              <Route path="/notlar" element={<Notlar />} />
             </Routes>
           </Box>
         </Box>

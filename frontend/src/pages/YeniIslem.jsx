@@ -11,14 +11,15 @@ import {
   Alert,
   Snackbar,
   InputAdornment,
+  Autocomplete,
+  Chip,
 } from '@mui/material';
 import {
   Save as SaveIcon,
-  Phone as PhoneIcon,
   DirectionsCar as CarIcon,
   AttachMoney as MoneyIcon,
 } from '@mui/icons-material';
-import { musteriler, hizmetler, islemler } from '../api';
+import { hizmetler, islemler } from '../api';
 
 export default function YeniIslem() {
   const [formData, setFormData] = useState({
@@ -37,8 +38,8 @@ export default function YeniIslem() {
   const [hizmetList, setHizmetList] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [loading, setLoading] = useState(false);
-  const [musteriAdi, setMusteriAdi] = useState('');
-  const [musteriTelefon, setMusteriTelefon] = useState('');
+  const [selectedHizmetler, setSelectedHizmetler] = useState([]);
+  const [plakaError, setPlakaError] = useState('');
 
   useEffect(() => {
     fetchHizmetler();
@@ -55,7 +56,20 @@ export default function YeniIslem() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    
+    if (name === 'plaka') {
+      const upperValue = value.toUpperCase();
+      setFormData({ ...formData, [name]: upperValue });
+      
+      // Boşluk kontrolü
+      if (upperValue.length > 0 && !upperValue.includes(' ')) {
+        setPlakaError('Plaka formatı: 34 ABC 123 (İl kodu ve harfler arasında boşluk olmalı)');
+      } else {
+        setPlakaError('');
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const kalanTutar = parseFloat(formData.tutar || 0) - parseFloat(formData.odenen_tutar || 0);
@@ -63,7 +77,7 @@ export default function YeniIslem() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.plaka || !formData.hizmet_turu || !formData.tutar) {
+    if (!formData.plaka || selectedHizmetler.length === 0 || !formData.tutar) {
       setSnackbar({
         open: true,
         message: 'Plaka, hizmet türü ve tutar alanları zorunludur!',
@@ -72,20 +86,25 @@ export default function YeniIslem() {
       return;
     }
 
+    // Plaka boşluk kontrolü
+    if (!formData.plaka.includes(' ')) {
+      setSnackbar({
+        open: true,
+        message: 'Plaka formatı yanlış! Boşluk kullanın (34 ABC 123)',
+        severity: 'error',
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      let musteriId = null;
-      
-      // Her durumda müşteri kaydı oluştur (boş bilgilerle de olsa)
-      const musteriResponse = await musteriler.create({
-        ad_soyad: musteriAdi || null,
-        telefon: musteriTelefon || null,
-      });
-      musteriId = musteriResponse.data.id;
+      // Seçilen hizmetleri '+' ile birleştir
+      const hizmetTuruStr = selectedHizmetler.join('+');
       
       await islemler.create({
         ...formData,
-        musteri_id: musteriId,
+        hizmet_turu: hizmetTuruStr,
+        musteri_id: null,
       });
       
       setSnackbar({
@@ -95,6 +114,8 @@ export default function YeniIslem() {
       });
       
       // Formu temizle
+      setSelectedHizmetler([]);
+      setPlakaError('');
       setFormData({
         musteri_id: null,
         plaka: '',
@@ -107,8 +128,6 @@ export default function YeniIslem() {
         notlar: '',
         durum: 'Bekliyor',
       });
-      setMusteriAdi('');
-      setMusteriTelefon('');
     } catch (error) {
       setSnackbar({
         open: true,
@@ -128,40 +147,6 @@ export default function YeniIslem() {
 
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          {/* Müşteri Bilgileri (Opsiyonel) */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <PhoneIcon /> Müşteri Bilgileri (Opsiyonel)
-                </Typography>
-                <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Müşteri Adı Soyadı"
-                      value={musteriAdi}
-                      onChange={(e) => setMusteriAdi(e.target.value)}
-                      placeholder="Ahmet Yılmaz"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Müşteri Telefon"
-                      value={musteriTelefon}
-                      onChange={(e) => setMusteriTelefon(e.target.value)}
-                      placeholder="05551234567"
-                    />
-                  </Grid>
-                </Grid>
-                <Alert severity="info" sx={{ mt: 2 }}>
-                  Müşteri bilgileri girmek zorunda değilsiniz. Sadece plaka ile de işlem kaydedebilirsiniz.
-                </Alert>
-              </CardContent>
-            </Card>
-          </Grid>
-
           {/* Araç Bilgileri */}
           <Grid item xs={12}>
             <Card>
@@ -178,7 +163,9 @@ export default function YeniIslem() {
                       value={formData.plaka}
                       onChange={handleChange}
                       required
-                      placeholder="34ABC123"
+                      placeholder="34 ABC 123"
+                      error={!!plakaError}
+                      helperText={plakaError || "Plaka otomatik büyük harfe dönüştürülür"}
                       InputProps={{
                         style: { fontSize: '18px', fontWeight: 'bold' }
                       }}
@@ -218,26 +205,27 @@ export default function YeniIslem() {
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      select
-                      label="Hizmet Türü"
-                      name="hizmet_turu"
-                      value={formData.hizmet_turu}
-                      onChange={handleChange}
-                      required
-                      helperText={hizmetList.length === 0 ? "Henüz hizmet eklenmemiş. Lütfen önce 'Hizmet Yönetimi' sayfasından hizmet ekleyin." : ""}
-                    >
-                      {hizmetList.length === 0 ? (
-                        <MenuItem disabled>Hizmet bulunamadı</MenuItem>
-                      ) : (
-                        hizmetList.map((hizmet) => (
-                          <MenuItem key={hizmet.id} value={hizmet.hizmet_adi}>
-                            {hizmet.hizmet_adi}
-                          </MenuItem>
-                        ))
+                    <Autocomplete
+                      multiple
+                      options={hizmetList.map(h => h.hizmet_adi)}
+                      value={selectedHizmetler}
+                      onChange={(e, newValue) => setSelectedHizmetler(newValue)}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => {
+                          const { key, ...tagProps } = getTagProps({ index });
+                          return <Chip key={key} label={option} {...tagProps} />;
+                        })
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Hizmet Türleri"
+                          placeholder="Hizmet seçin"
+                          required={selectedHizmetler.length === 0}
+                          helperText={selectedHizmetler.length > 0 ? `Seçilen hizmetler: ${selectedHizmetler.join(' + ')}` : "Birden fazla hizmet seçebilirsiniz"}
+                        />
                       )}
-                    </TextField>
+                    />
                   </Grid>
                   
                   <Grid item xs={12} sm={6}>

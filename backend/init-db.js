@@ -29,8 +29,7 @@ async function initDatabase() {
     await client.query(`
       CREATE TABLE IF NOT EXISTS musteriler (
         id SERIAL PRIMARY KEY,
-        ad_soyad VARCHAR(255),
-        telefon VARCHAR(20),
+        plaka VARCHAR(20) UNIQUE NOT NULL,
         kayit_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         toplam_harcama DECIMAL(10, 2) DEFAULT 0,
         aktif_bakiye DECIMAL(10, 2) DEFAULT 0,
@@ -96,6 +95,19 @@ async function initDatabase() {
     `);
     console.log('✅ Giderler tablosu oluşturuldu');
 
+    // 6. Notlar Tablosu
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notlar (
+        id SERIAL PRIMARY KEY,
+        baslik VARCHAR(255) NOT NULL,
+        icerik TEXT,
+        renk VARCHAR(20) DEFAULT 'yellow',
+        olusturma_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        guncelleme_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('✅ Notlar tablosu oluşturuldu');
+
     console.log('\n🎉 Veritabanı başarıyla hazırlandı!');
     console.log('📊 Oluşturulan tablolar:');
     console.log('   - musteriler');
@@ -103,6 +115,7 @@ async function initDatabase() {
     console.log('   - arac_islemler');
     console.log('   - odeme_gecmisi');
     console.log('   - giderler');
+    console.log('   - notlar');
 
   } catch (error) {
     console.error('❌ Hata:', error.message);

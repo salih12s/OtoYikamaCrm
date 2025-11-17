@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -13,8 +13,10 @@ import {
   Assessment as AssessmentIcon,
   Settings as SettingsIcon,
   List as ListIcon,
+  Notes as NotesIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { raporlar } from '../api';
 
 const QuickAccessButton = ({ title, icon, color, path, onClick }) => (
   <Card 
@@ -66,12 +68,97 @@ const QuickAccessButton = ({ title, icon, color, path, onClick }) => (
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [durumOzeti, setDurumOzeti] = useState(null);
+
+  useEffect(() => {
+    fetchDurumOzeti();
+  }, []);
+
+  const fetchDurumOzeti = async () => {
+    try {
+      const response = await raporlar.dashboard();
+      setDurumOzeti(response.data.durum_ozeti);
+    } catch (error) {
+      console.error('Durum özeti yüklenemedi:', error);
+    }
+  };
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ mb: 3, textAlign: 'center', fontSize: '1.75rem' }}>
-        🚗 Oto Yıkama CRM
-      </Typography>
+      {durumOzeti && (
+        <Grid container spacing={1} sx={{ mb: 3 }}>
+          <Grid item xs={6} sm={2.4}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              color: 'white',
+              textAlign: 'center'
+            }}>
+              <CardContent sx={{ py: 1.5, px: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  {durumOzeti.bugun_arac}
+                </Typography>
+                <Typography variant="caption">Bugün Araç</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6} sm={2.4}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              textAlign: 'center'
+            }}>
+              <CardContent sx={{ py: 1.5, px: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  ₺{parseFloat(durumOzeti.bugun_gelir || 0).toFixed(0)}
+                </Typography>
+                <Typography variant="caption">Gelir</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={4} sm={2.4}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white',
+              textAlign: 'center'
+            }}>
+              <CardContent sx={{ py: 1.5, px: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  {durumOzeti.bekliyor || 0}
+                </Typography>
+                <Typography variant="caption">Bekliyor</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={4} sm={2.4}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+              color: 'white',
+              textAlign: 'center'
+            }}>
+              <CardContent sx={{ py: 1.5, px: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  {durumOzeti.islemde || 0}
+                </Typography>
+                <Typography variant="caption">İşlemde</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={4} sm={2.4}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              textAlign: 'center'
+            }}>
+              <CardContent sx={{ py: 1.5, px: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  {durumOzeti.teslim || 0}
+                </Typography>
+                <Typography variant="caption">Teslim</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      )}
 
       <Grid container spacing={2.5}>
         <Grid item xs={12}>
@@ -106,11 +193,11 @@ export default function Dashboard() {
 
         <Grid item xs={12}>
           <QuickAccessButton
-            title="Raporlar"
+            title="Giderler"
             icon={<AssessmentIcon sx={{ color: 'white', fontSize: 56 }} />}
             color="#ef4444"
-            path="/raporlar"
-            onClick={() => navigate('/raporlar')}
+            path="/giderler"
+            onClick={() => navigate('/giderler')}
           />
         </Grid>
 
@@ -131,6 +218,16 @@ export default function Dashboard() {
             color="#06b6d4"
             path="/musteri-listesi"
             onClick={() => navigate('/musteri-listesi')}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <QuickAccessButton
+            title="Notlar"
+            icon={<NotesIcon sx={{ color: 'white', fontSize: 56 }} />}
+            color="#6366f1"
+            path="/notlar"
+            onClick={() => navigate('/notlar')}
           />
         </Grid>
       </Grid>

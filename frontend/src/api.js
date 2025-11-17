@@ -62,4 +62,11 @@ export const giderler = {
   getOzet: () => api.get('/giderler/ozet'),
 };
 
+export const notlar = {
+  getAll: () => api.get('/notlar'),
+  create: (data) => api.post('/notlar', data),
+  update: (id, data) => api.put(`/notlar/${id}`, data),
+  delete: (id) => api.delete(`/notlar/${id}`),
+};
+
 export default api;

@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  Phone as PhoneIcon,
   Person as PersonIcon,
   CalendarMonth as CalendarIcon,
 } from '@mui/icons-material';
@@ -60,16 +59,15 @@ export default function MusteriListesi() {
     if (searchTerm) {
       filtered = filtered.filter(
         (musteri) =>
-          musteri.ad_soyad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          musteri.telefon?.includes(searchTerm)
+          musteri.plaka?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Sıralama
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'ad_soyad':
-          return (a.ad_soyad || '').localeCompare(b.ad_soyad || '');
+        case 'plaka':
+          return (a.plaka || '').localeCompare(b.plaka || '');
         case 'toplam_harcama':
           return (b.toplam_harcama || 0) - (a.toplam_harcama || 0);
         case 'aktif_bakiye':
@@ -108,7 +106,7 @@ export default function MusteriListesi() {
             <Grid item xs={12} sm={8}>
               <TextField
                 fullWidth
-                placeholder="Müşteri adı veya telefon ile ara..."
+                placeholder="Plaka ile ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 InputProps={{
@@ -129,7 +127,7 @@ export default function MusteriListesi() {
                   onChange={(e) => setSortBy(e.target.value)}
                 >
                   <MenuItem value="kayit_tarihi">Kayıt Tarihi (Yeni → Eski)</MenuItem>
-                  <MenuItem value="ad_soyad">İsme Göre (A → Z)</MenuItem>
+                  <MenuItem value="plaka">Plakaya Göre (A → Z)</MenuItem>
                   <MenuItem value="toplam_harcama">Toplam Harcama (Çok → Az)</MenuItem>
                   <MenuItem value="aktif_bakiye">Borç Durumu (Çok → Az)</MenuItem>
                 </Select>
@@ -195,8 +193,7 @@ export default function MusteriListesi() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell><strong>Müşteri Adı</strong></TableCell>
-                    <TableCell><strong>Telefon</strong></TableCell>
+                    <TableCell><strong>Plaka</strong></TableCell>
                     <TableCell align="right"><strong>Gelir</strong></TableCell>
                     <TableCell align="right"><strong>Borç</strong></TableCell>
                     <TableCell><strong>Kayıt Tarihi</strong></TableCell>
@@ -208,13 +205,7 @@ export default function MusteriListesi() {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <PersonIcon fontSize="small" color="primary" />
-                          <Typography fontWeight="600">{musteri.ad_soyad || '-'}</Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <PhoneIcon fontSize="small" color="action" />
-                          {musteri.telefon || '-'}
+                          <Typography fontWeight="700" fontSize="18px">{musteri.plaka || '-'}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell align="right">
