@@ -49,4 +49,14 @@ export const raporlar = {
   borcluMusteriler: () => api.get('/raporlar/borclu-musteriler'),
 };
 
+// Gider API'leri
+export const giderler = {
+  getAll: () => api.get('/giderler'),
+  getByDateRange: (baslangic, bitis) => api.get(`/giderler/tarih/${baslangic}/${bitis}`),
+  create: (data) => api.post('/giderler', data),
+  update: (id, data) => api.put(`/giderler/${id}`, data),
+  delete: (id) => api.delete(`/giderler/${id}`),
+  getOzet: () => api.get('/giderler/ozet'),
+};
+
 export default api;

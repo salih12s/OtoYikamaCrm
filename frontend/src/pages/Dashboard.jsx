@@ -13,6 +13,7 @@ import {
   People as PeopleIcon,
   Assessment as AssessmentIcon,
   Settings as SettingsIcon,
+  List as ListIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -121,6 +122,16 @@ export default function Dashboard() {
             color="#8b5cf6"
             path="/hizmetler"
             onClick={() => navigate('/hizmetler')}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <QuickAccessButton
+            title="Müşteri Listesi"
+            icon={<ListIcon sx={{ color: 'white', fontSize: 56 }} />}
+            color="#06b6d4"
+            path="/musteri-listesi"
+            onClick={() => navigate('/musteri-listesi')}
           />
         </Grid>
       </Grid>

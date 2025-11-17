@@ -655,6 +655,109 @@ app.get('/api/raporlar/dashboard', async (req, res) => {
 });
 
 // ============================================
+// 💰 GİDER İŞLEMLERİ
+// ============================================
+
+// Tüm giderleri getir
+app.get('/api/giderler', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT * FROM giderler 
+      ORDER BY tarih DESC, olusturma_tarihi DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Gider ekle
+app.post('/api/giderler', async (req, res) => {
+  try {
+    const { tarih, kategori, aciklama, tutar } = req.body;
+    
+    const result = await pool.query(
+      `INSERT INTO giderler (tarih, kategori, aciklama, tutar) 
+       VALUES ($1, $2, $3, $4) 
+       RETURNING *`,
+      [tarih, kategori, aciklama, tutar]
+    );
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Gider güncelle
+app.put('/api/giderler/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tarih, kategori, aciklama, tutar } = req.body;
+    
+    const result = await pool.query(
+      `UPDATE giderler 
+       SET tarih = $1, kategori = $2, aciklama = $3, tutar = $4 
+       WHERE id = $5 
+       RETURNING *`,
+      [tarih, kategori, aciklama, tutar, id]
+    );
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Gider sil
+app.delete('/api/giderler/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM giderler WHERE id = $1', [id]);
+    res.json({ message: 'Gider silindi' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Tarih aralığına göre giderler
+app.get('/api/giderler/tarih/:baslangic/:bitis', async (req, res) => {
+  try {
+    const { baslangic, bitis } = req.params;
+    
+    const result = await pool.query(
+      `SELECT * FROM giderler 
+       WHERE tarih BETWEEN $1 AND $2 
+       ORDER BY tarih DESC`,
+      [baslangic, bitis]
+    );
+    
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Kategoriye göre gider özeti
+app.get('/api/giderler/ozet', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        kategori,
+        COUNT(*) as adet,
+        SUM(tutar) as toplam
+      FROM giderler
+      GROUP BY kategori
+      ORDER BY toplam DESC
+    `);
+    
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================
 // SERVER BAŞLAT
 // ============================================
 

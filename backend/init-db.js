@@ -16,6 +16,7 @@ async function initDatabase() {
     console.log('🔧 Mevcut tablolar siliniyor...');
     
     // Önce tüm tabloları sil (CASCADE ile bağlantıları da siler)
+    await client.query('DROP TABLE IF EXISTS giderler CASCADE');
     await client.query('DROP TABLE IF EXISTS odeme_gecmisi CASCADE');
     await client.query('DROP TABLE IF EXISTS arac_islemler CASCADE');
     await client.query('DROP TABLE IF EXISTS hizmetler CASCADE');
@@ -84,12 +85,26 @@ async function initDatabase() {
     `);
     console.log('✅ Ödeme geçmişi tablosu oluşturuldu');
 
+    // 5. Giderler Tablosu
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS giderler (
+        id SERIAL PRIMARY KEY,
+        tarih DATE NOT NULL DEFAULT CURRENT_DATE,
+        kategori VARCHAR(100) NOT NULL,
+        aciklama TEXT,
+        tutar DECIMAL(10, 2) NOT NULL,
+        olusturma_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('✅ Giderler tablosu oluşturuldu');
+
     console.log('\n🎉 Veritabanı başarıyla hazırlandı!');
     console.log('📊 Oluşturulan tablolar:');
     console.log('   - musteriler');
     console.log('   - hizmetler');
     console.log('   - arac_islemler');
     console.log('   - odeme_gecmisi');
+    console.log('   - giderler');
 
   } catch (error) {
     console.error('❌ Hata:', error.message);

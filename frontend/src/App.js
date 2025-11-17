@@ -19,6 +19,7 @@ import Islemler from './pages/Islemler';
 import Raporlar from './pages/Raporlar';
 import BorcTakip from './pages/BorcTakip';
 import Hizmetler from './pages/Hizmetler';
+import MusteriListesi from './pages/MusteriListesi';
 
 // Dark tema oluştur
 const darkTheme = createTheme({
@@ -186,6 +187,7 @@ function App() {
               <Route path="/borc-takip" element={<BorcTakip />} />
               <Route path="/raporlar" element={<Raporlar />} />
               <Route path="/hizmetler" element={<Hizmetler />} />
+              <Route path="/musteri-listesi" element={<MusteriListesi />} />
             </Routes>
           </Box>
         </Box>
