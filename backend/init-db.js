@@ -29,8 +29,8 @@ async function initDatabase() {
     await client.query(`
       CREATE TABLE IF NOT EXISTS musteriler (
         id SERIAL PRIMARY KEY,
-        ad_soyad VARCHAR(255) NOT NULL,
-        telefon VARCHAR(20) UNIQUE,
+        ad_soyad VARCHAR(255),
+        telefon VARCHAR(20),
         kayit_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         toplam_harcama DECIMAL(10, 2) DEFAULT 0,
         aktif_bakiye DECIMAL(10, 2) DEFAULT 0,
@@ -44,8 +44,6 @@ async function initDatabase() {
       CREATE TABLE IF NOT EXISTS hizmetler (
         id SERIAL PRIMARY KEY,
         hizmet_adi VARCHAR(255) NOT NULL,
-        kategori VARCHAR(100),
-        sure INTEGER,
         aktif BOOLEAN DEFAULT true,
         olusturma_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )

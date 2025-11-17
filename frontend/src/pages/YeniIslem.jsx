@@ -79,14 +79,12 @@ export default function YeniIslem() {
     try {
       let musteriId = null;
       
-      // Eğer müşteri adı ve telefon girildiyse, önce müşteri oluştur
-      if (musteriAdi && musteriTelefon) {
-        const musteriResponse = await musteriler.create({
-          ad_soyad: musteriAdi,
-          telefon: musteriTelefon,
-        });
-        musteriId = musteriResponse.data.id;
-      }
+      // Her durumda müşteri kaydı oluştur (boş bilgilerle de olsa)
+      const musteriResponse = await musteriler.create({
+        ad_soyad: musteriAdi || null,
+        telefon: musteriTelefon || null,
+      });
+      musteriId = musteriResponse.data.id;
       
       await islemler.create({
         ...formData,
@@ -238,7 +236,7 @@ export default function YeniIslem() {
                       ) : (
                         hizmetList.map((hizmet) => (
                           <MenuItem key={hizmet.id} value={hizmet.hizmet_adi}>
-                            {hizmet.hizmet_adi} {hizmet.sure && `(${hizmet.sure} dk)`}
+                            {hizmet.hizmet_adi}
                           </MenuItem>
                         ))
                       )}

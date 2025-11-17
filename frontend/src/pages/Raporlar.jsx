@@ -47,6 +47,7 @@ export default function Raporlar() {
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
   const [gunlukData, setGunlukData] = useState(null);
+  const [aylikData, setAylikData] = useState(null);
   const [haftalikData, setHaftalikData] = useState([]);
   const [giderData, setGiderData] = useState([]);
   const [giderOzet, setGiderOzet] = useState([]);
@@ -69,6 +70,8 @@ export default function Raporlar() {
         case 0: // Günlük Rapor
           const gunluk = await raporlar.gunluk(selectedDate);
           setGunlukData(gunluk.data);
+          const dashboard = await raporlar.dashboard();
+          setAylikData(dashboard.data.bu_ay);
           break;
         case 1: // Haftalık Rapor
           const haftalik = await raporlar.haftalik();
@@ -169,35 +172,62 @@ export default function Raporlar() {
           InputLabelProps={{ shrink: true }}
         />
 
-        {gunlukData && (
+        {gunlukData && aylikData && (
           <>
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={6}>
-                <Card sx={{ background: 'linear-gradient(135deg, #10b98133 0%, #10b98122 100%)', border: '3px solid #10b981' }}>
+              <Grid item xs={12}>
+                <Card sx={{ 
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
+                  border: '4px solid #3b82f6',
+                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
+                }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <TrendingUpIcon sx={{ color: '#10b981' }} />
-                      <Typography variant="body2" color="text.secondary">Gelir</Typography>
+                      <TrendingUpIcon sx={{ color: '#fff', fontSize: 32 }} />
+                      <Typography variant="h6" fontWeight="600" color="#fff">Bu Ayki Gelir</Typography>
                     </Box>
-                    <Typography variant="h4" fontWeight="bold" color="#10b981">
-                      ₺{parseFloat(gunlukData.toplam_gelir || 0).toFixed(2)}
+                    <Typography variant="h3" fontWeight="bold" color="#fff">
+                      ₺{parseFloat(aylikData.gelir || 0).toFixed(2)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">{gunlukData.toplam_islem} işlem</Typography>
+                    <Typography variant="body1" color="rgba(255,255,255,0.9)">{aylikData.islem} işlem</Typography>
                   </CardContent>
                 </Card>
               </Grid>
 
-              <Grid item xs={6}>
-                <Card sx={{ background: 'linear-gradient(135deg, #ef444433 0%, #ef444422 100%)', border: '3px solid #ef4444' }}>
+              <Grid item xs={12}>
+                <Card sx={{ 
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
+                  border: '4px solid #10b981',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
+                }}>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      <TrendingDownIcon sx={{ color: '#ef4444' }} />
-                      <Typography variant="body2" color="text.secondary">Tahsil Edilmedi</Typography>
+                      <TrendingUpIcon sx={{ color: '#fff', fontSize: 32 }} />
+                      <Typography variant="h6" fontWeight="600" color="#fff">Günlük Gelir</Typography>
                     </Box>
-                    <Typography variant="h4" fontWeight="bold" color="#ef4444">
+                    <Typography variant="h3" fontWeight="bold" color="#fff">
+                      ₺{parseFloat(gunlukData.toplam_gelir || 0).toFixed(2)}
+                    </Typography>
+                    <Typography variant="body1" color="rgba(255,255,255,0.9)">{gunlukData.toplam_islem} işlem</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Card sx={{ 
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', 
+                  border: '4px solid #ef4444',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
+                }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <TrendingDownIcon sx={{ color: '#fff', fontSize: 32 }} />
+                      <Typography variant="h6" fontWeight="600" color="#fff">Tahsil Edilmedi</Typography>
+                    </Box>
+                    <Typography variant="h3" fontWeight="bold" color="#fff">
                       ₺{parseFloat(gunlukData.tahsil_edilmedi || 0).toFixed(2)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">Borç</Typography>
+                    <Typography variant="body1" color="rgba(255,255,255,0.9)">Borç</Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -210,13 +240,17 @@ export default function Raporlar() {
                   <Grid container spacing={2}>
                     {gunlukData.odeme_yontemleri.map((odeme, idx) => (
                       <Grid item xs={6} key={idx}>
-                        <Card sx={{ bgcolor: 'background.default', border: '2px solid', borderColor: '#3b82f6' }}>
+                        <Card sx={{ 
+                          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
+                          border: '3px solid #3b82f6',
+                          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                        }}>
                           <CardContent>
-                            <Typography variant="body2" color="text.secondary">{odeme.odeme_yontemi}</Typography>
-                            <Typography variant="h6" fontWeight="bold" color="#3b82f6">
+                            <Typography variant="body1" fontWeight="600" color="#fff">{odeme.odeme_yontemi}</Typography>
+                            <Typography variant="h4" fontWeight="bold" color="#fff">
                               ₺{parseFloat(odeme.toplam).toFixed(2)}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">{odeme.adet} işlem</Typography>
+                            <Typography variant="body2" color="rgba(255,255,255,0.9)">{odeme.adet} işlem</Typography>
                           </CardContent>
                         </Card>
                       </Grid>
@@ -303,22 +337,30 @@ export default function Raporlar() {
           <Grid container spacing={2} sx={{ mb: 3 }}>
             {giderOzet.map((ozet, idx) => (
               <Grid item xs={6} key={idx}>
-                <Card sx={{ background: 'linear-gradient(135deg, #f59e0b33 0%, #f59e0b22 100%)', border: '2px solid #f59e0b' }}>
+                <Card sx={{ 
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', 
+                  border: '3px solid #f59e0b',
+                  boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
+                }}>
                   <CardContent>
-                    <Typography variant="body2" color="text.secondary">{ozet.kategori}</Typography>
-                    <Typography variant="h5" fontWeight="bold" color="#f59e0b">
+                    <Typography variant="body1" fontWeight="600" color="#fff">{ozet.kategori}</Typography>
+                    <Typography variant="h4" fontWeight="bold" color="#fff">
                       ₺{parseFloat(ozet.toplam).toFixed(2)}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">{ozet.adet} kayıt</Typography>
+                    <Typography variant="body2" color="rgba(255,255,255,0.9)">{ozet.adet} kayıt</Typography>
                   </CardContent>
                 </Card>
               </Grid>
             ))}
             <Grid item xs={12}>
-              <Card sx={{ background: 'linear-gradient(135deg, #ef444433 0%, #ef444422 100%)', border: '3px solid #ef4444' }}>
+              <Card sx={{ 
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', 
+                border: '4px solid #ef4444',
+                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)'
+              }}>
                 <CardContent>
-                  <Typography variant="body2" color="text.secondary">TOPLAM GİDER</Typography>
-                  <Typography variant="h4" fontWeight="bold" color="#ef4444">
+                  <Typography variant="h6" fontWeight="600" color="#fff">TOPLAM GİDER</Typography>
+                  <Typography variant="h3" fontWeight="bold" color="#fff">
                     ₺{giderOzet.reduce((sum, g) => sum + parseFloat(g.toplam), 0).toFixed(2)}
                   </Typography>
                 </CardContent>

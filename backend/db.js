@@ -9,4 +9,9 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
+// Türkiye saatine çevir (UTC+3)
+pool.on('connect', (client) => {
+  client.query("SET timezone = 'Europe/Istanbul'");
+});
+
 module.exports = pool;

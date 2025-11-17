@@ -39,8 +39,6 @@ export default function Hizmetler() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [formData, setFormData] = useState({
     hizmet_adi: '',
-    kategori: '',
-    sure: '',
   });
 
   useEffect(() => {
@@ -69,15 +67,11 @@ export default function Hizmetler() {
       setEditingHizmet(hizmet);
       setFormData({
         hizmet_adi: hizmet.hizmet_adi,
-        kategori: hizmet.kategori || '',
-        sure: hizmet.sure || '',
       });
     } else {
       setEditingHizmet(null);
       setFormData({
         hizmet_adi: '',
-        kategori: '',
-        sure: '',
       });
     }
     setDialogOpen(true);
@@ -88,8 +82,6 @@ export default function Hizmetler() {
     setEditingHizmet(null);
     setFormData({
       hizmet_adi: '',
-      kategori: '',
-      sure: '',
     });
   };
 
@@ -183,15 +175,13 @@ export default function Hizmetler() {
               <TableHead>
                 <TableRow>
                   <TableCell><strong>Hizmet Adı</strong></TableCell>
-                  <TableCell><strong>Kategori</strong></TableCell>
-                  <TableCell align="center"><strong>Süre (dk)</strong></TableCell>
                   <TableCell align="right"><strong>İşlemler</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {hizmetList.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} align="center">
+                    <TableCell colSpan={2} align="center">
                       <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
                         Henüz hizmet eklenmemiş. "Yeni Hizmet" butonuna tıklayarak hizmet ekleyebilirsiniz.
                       </Typography>
@@ -202,14 +192,6 @@ export default function Hizmetler() {
                     <TableRow key={hizmet.id}>
                       <TableCell>
                         <Typography fontWeight="bold">{hizmet.hizmet_adi}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        {hizmet.kategori && (
-                          <Chip label={hizmet.kategori} size="small" color="primary" />
-                        )}
-                      </TableCell>
-                      <TableCell align="center">
-                        {hizmet.sure ? `${hizmet.sure} dk` : '-'}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
@@ -253,25 +235,6 @@ export default function Hizmetler() {
                 onChange={(e) => setFormData({ ...formData, hizmet_adi: e.target.value })}
                 required
                 placeholder="Örn: İç-Dış Yıkama"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Kategori"
-                value={formData.kategori}
-                onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
-                placeholder="Örn: Temel Yıkama"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Süre (dakika)"
-                value={formData.sure}
-                onChange={(e) => setFormData({ ...formData, sure: e.target.value })}
-                placeholder="30"
               />
             </Grid>
           </Grid>

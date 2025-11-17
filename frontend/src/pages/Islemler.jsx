@@ -37,6 +37,8 @@ export default function Islemler() {
   const [paymentDialog, setPaymentDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [durumFilter, setDurumFilter] = useState('Hepsi');
   const [paymentData, setPaymentData] = useState({
     odenen_miktar: '',
     odeme_yontemi: 'Nakit',
@@ -150,6 +152,19 @@ export default function Islemler() {
     }
   };
 
+  const filteredList = islemList.filter((islem) => {
+    const matchesSearch = searchTerm === '' || 
+      islem.plaka?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      islem.ad_soyad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      islem.telefon?.includes(searchTerm) ||
+      islem.marka?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      islem.model?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesDurum = durumFilter === 'Hepsi' || islem.durum === durumFilter;
+    
+    return matchesSearch && matchesDurum;
+  });
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -169,14 +184,46 @@ export default function Islemler() {
   return (
     <Box>
       <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
-        🔧 İşlemler ({islemList.length})
+        🔧 İşlemler ({filteredList.length})
       </Typography>
 
-      {islemList.length === 0 ? (
-        <Alert severity="info">Henüz işlem bulunmuyor.</Alert>
+      {/* Arama ve Filtre */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <TextField
+                fullWidth
+                placeholder="Plaka, müşteri adı, telefon ile ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                fullWidth
+                label="Durum"
+                value={durumFilter}
+                onChange={(e) => setDurumFilter(e.target.value)}
+                size="small"
+              >
+                <MenuItem value="Hepsi">Hepsi</MenuItem>
+                <MenuItem value="Bekliyor">Bekliyor</MenuItem>
+                <MenuItem value="İşlemde">İşlemde</MenuItem>
+                <MenuItem value="Teslim edildi">Teslim edildi</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {filteredList.length === 0 ? (
+        <Alert severity="info">{searchTerm || durumFilter !== 'Hepsi' ? 'Arama kriterlerine uygun işlem bulunamadı.' : 'Henüz işlem bulunmuyor.'}</Alert>
       ) : (
         <Grid container spacing={2}>
-          {islemList.map((islem) => (
+          {filteredList.map((islem) => (
             <Grid item xs={12} key={islem.id}>
               <Card>
                 <CardContent>

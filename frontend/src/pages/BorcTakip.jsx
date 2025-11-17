@@ -39,6 +39,8 @@ export default function BorcTakip() {
   const [selectedBorc, setSelectedBorc] = useState(null);
   const [paymentDialog, setPaymentDialog] = useState(false);
   const [historyDialog, setHistoryDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('tutar_desc');
   const [odemeData, setOdemeData] = useState({
     odenen_miktar: '',
     odeme_yontemi: 'Nakit',
@@ -95,6 +97,28 @@ export default function BorcTakip() {
     }
   };
 
+  const filteredAndSortedList = borcluList
+    .filter((islem) => {
+      return searchTerm === '' ||
+        islem.plaka?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        islem.ad_soyad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        islem.telefon?.includes(searchTerm);
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'tutar_desc':
+          return parseFloat(b.kalan_tutar) - parseFloat(a.kalan_tutar);
+        case 'tutar_asc':
+          return parseFloat(a.kalan_tutar) - parseFloat(b.kalan_tutar);
+        case 'tarih_desc':
+          return new Date(b.gelis_tarihi) - new Date(a.gelis_tarihi);
+        case 'tarih_asc':
+          return new Date(a.gelis_tarihi) - new Date(b.gelis_tarihi);
+        default:
+          return 0;
+      }
+    });
+
   const handleGecmisGoster = async (islem) => {
     setSelectedBorc(islem);
     // İşlem detaylarını göster
@@ -110,7 +134,7 @@ export default function BorcTakip() {
     setHistoryDialog(true);
   };
 
-  const toplamBorc = borcluList.reduce(
+  const toplamBorc = filteredAndSortedList.reduce(
     (sum, islem) => sum + parseFloat(islem.kalan_tutar),
     0
   );
@@ -141,11 +165,43 @@ export default function BorcTakip() {
                 ₺{toplamBorc.toFixed(2)}
               </Typography>
               <Typography variant="body2" color="text.primary" fontWeight="500">
-                {borcluList.length} borçlu işlem
+                {filteredAndSortedList.length} borçlu işlem
               </Typography>
             </Box>
             <WarningIcon sx={{ fontSize: 80, color: '#ef4444', opacity: 0.5 }} />
           </Box>
+        </CardContent>
+      </Card>
+
+      {/* Arama ve Sıralama */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <TextField
+                fullWidth
+                placeholder="Müşteri adı, plaka veya telefon ile ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                fullWidth
+                label="Sırala"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                size="small"
+              >
+                <MenuItem value="tutar_desc">Borç (Çok → Az)</MenuItem>
+                <MenuItem value="tutar_asc">Borç (Az → Çok)</MenuItem>
+                <MenuItem value="tarih_desc">Tarih (Yeni → Eski)</MenuItem>
+                <MenuItem value="tarih_asc">Tarih (Eski → Yeni)</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
 
@@ -155,9 +211,11 @@ export default function BorcTakip() {
           <Typography variant="h6">Harika! Hiç borç yok! 🎉</Typography>
           Tüm ödemeler tamamlanmış durumda.
         </Alert>
+      ) : filteredAndSortedList.length === 0 ? (
+        <Alert severity="info">Arama kriterlerine uygun borçlu işlem bulunamadı.</Alert>
       ) : (
         <Grid container spacing={2}>
-          {borcluList.map((islem) => (
+          {filteredAndSortedList.map((islem) => (
             <Grid item xs={12} key={islem.id}>
               <Card>
                 <CardContent>

@@ -142,40 +142,40 @@ export default function MusteriListesi() {
       {/* Özet Bilgi */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6} sm={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #3b82f633 0%, #3b82f622 100%)', border: '2px solid #3b82f6' }}>
+          <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">Toplam Müşteri</Typography>
-              <Typography variant="h4" fontWeight="bold" color="#3b82f6">
+              <Typography variant="h4" fontWeight="bold" color="primary">
                 {filteredList.length}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={6} sm={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #10b98133 0%, #10b98122 100%)', border: '2px solid #10b981' }}>
+          <Card>
             <CardContent>
-              <Typography variant="body2" color="text.secondary">Toplam Harcama</Typography>
-              <Typography variant="h5" fontWeight="bold" color="#10b981">
+              <Typography variant="body2" color="text.secondary">Toplam gelir</Typography>
+              <Typography variant="h5" fontWeight="bold" color="success.main">
                 ₺{filteredList.reduce((sum, m) => sum + parseFloat(m.toplam_harcama || 0), 0).toFixed(2)}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={6} sm={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #ef444433 0%, #ef444422 100%)', border: '2px solid #ef4444' }}>
+          <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">Toplam Borç</Typography>
-              <Typography variant="h5" fontWeight="bold" color="#ef4444">
+              <Typography variant="h5" fontWeight="bold" color="error.main">
                 ₺{filteredList.reduce((sum, m) => sum + parseFloat(m.aktif_bakiye || 0), 0).toFixed(2)}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={6} sm={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #f59e0b33 0%, #f59e0b22 100%)', border: '2px solid #f59e0b' }}>
+          <Card>
             <CardContent>
               <Typography variant="body2" color="text.secondary">Borçlu Müşteri</Typography>
-              <Typography variant="h4" fontWeight="bold" color="#f59e0b">
+              <Typography variant="h4" fontWeight="bold" color="warning.main">
                 {filteredList.filter(m => parseFloat(m.aktif_bakiye || 0) > 0).length}
               </Typography>
             </CardContent>
@@ -197,7 +197,7 @@ export default function MusteriListesi() {
                   <TableRow>
                     <TableCell><strong>Müşteri Adı</strong></TableCell>
                     <TableCell><strong>Telefon</strong></TableCell>
-                    <TableCell align="right"><strong>Toplam Harcama</strong></TableCell>
+                    <TableCell align="right"><strong>Gelir</strong></TableCell>
                     <TableCell align="right"><strong>Borç</strong></TableCell>
                     <TableCell><strong>Kayıt Tarihi</strong></TableCell>
                   </TableRow>
@@ -208,7 +208,7 @@ export default function MusteriListesi() {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <PersonIcon fontSize="small" color="primary" />
-                          <Typography fontWeight="600">{musteri.ad_soyad}</Typography>
+                          <Typography fontWeight="600">{musteri.ad_soyad || '-'}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell>

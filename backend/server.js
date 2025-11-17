@@ -419,11 +419,11 @@ app.get('/api/hizmetler', async (req, res) => {
 // Yeni hizmet ekle
 app.post('/api/hizmetler', async (req, res) => {
   try {
-    const { hizmet_adi, kategori, sure } = req.body;
+    const { hizmet_adi } = req.body;
     
     const result = await pool.query(
-      'INSERT INTO hizmetler (hizmet_adi, kategori, sure) VALUES ($1, $2, $3) RETURNING *',
-      [hizmet_adi, kategori, sure]
+      'INSERT INTO hizmetler (hizmet_adi) VALUES ($1) RETURNING *',
+      [hizmet_adi]
     );
     
     res.status(201).json(result.rows[0]);
@@ -436,11 +436,11 @@ app.post('/api/hizmetler', async (req, res) => {
 app.put('/api/hizmetler/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { hizmet_adi, kategori, sure, aktif } = req.body;
+    const { hizmet_adi, aktif } = req.body;
     
     const result = await pool.query(
-      'UPDATE hizmetler SET hizmet_adi = $1, kategori = $2, sure = $3, aktif = $4 WHERE id = $5 RETURNING *',
-      [hizmet_adi, kategori, sure, aktif !== undefined ? aktif : true, id]
+      'UPDATE hizmetler SET hizmet_adi = $1, aktif = $2 WHERE id = $3 RETURNING *',
+      [hizmet_adi, aktif !== undefined ? aktif : true, id]
     );
     
     res.json(result.rows[0]);
