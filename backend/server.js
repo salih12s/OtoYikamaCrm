@@ -49,7 +49,7 @@ app.get('/api/musteriler/:id', async (req, res) => {
     
     const musteri = await pool.query('SELECT * FROM musteriler WHERE id = $1', [id]);
     const araclar = await pool.query(
-      'SELECT * FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC',
+      'SELECT *, (gelis_tarihi AT TIME ZONE \'UTC\' AT TIME ZONE \'Europe/Istanbul\') as gelis_tarihi FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC',
       [id]
     );
     
@@ -135,7 +135,9 @@ app.get('/api/musteriler/telefon/:telefon', async (req, res) => {
 app.get('/api/islemler', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.*, m.ad_soyad, m.telefon
+      SELECT a.*, 
+             (a.gelis_tarihi AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul') as gelis_tarihi,
+             m.ad_soyad, m.telefon
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       ORDER BY a.gelis_tarihi DESC
@@ -153,7 +155,9 @@ app.get('/api/islemler/tarih', async (req, res) => {
     const { baslangic, bitis } = req.query;
     
     let query = `
-      SELECT a.*, m.ad_soyad, m.telefon
+      SELECT a.*,
+             (a.gelis_tarihi AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul') as gelis_tarihi,
+             m.ad_soyad, m.telefon
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       WHERE 1=1
@@ -204,15 +208,16 @@ app.post('/api/islemler', async (req, res) => {
     // İşlem ekle
     const islemResult = await client.query(
       `INSERT INTO arac_islemler 
-       (musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum, gelis_tarihi)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Istanbul') RETURNING *`,
+       (musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *,
+       (gelis_tarihi AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul') as gelis_tarihi`,
       [musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
     );
     
     // Ödeme geçmişi ekle (eğer ödeme yapıldıysa)
     if (odenen_tutar > 0) {
       await client.query(
-        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, odeme_tarihi) VALUES ($1, $2, $3, CURRENT_TIMESTAMP AT TIME ZONE \'Europe/Istanbul\')',
+        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi) VALUES ($1, $2, $3)',
         [islemResult.rows[0].id, odenen_tutar, odeme_yontemi]
       );
     }
@@ -386,7 +391,7 @@ app.post('/api/islemler/:id/odeme', async (req, res) => {
     
     // Ödeme geçmişi ekle
     await client.query(
-      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar, odeme_tarihi) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP AT TIME ZONE \'Europe/Istanbul\')',
+      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar) VALUES ($1, $2, $3, $4)',
       [id, odenen_miktar, odeme_yontemi, notlar]
     );
     
@@ -684,8 +689,8 @@ app.post('/api/giderler', async (req, res) => {
     const { tarih, kategori, aciklama, tutar } = req.body;
     
     const result = await pool.query(
-      `INSERT INTO giderler (tarih, kategori, aciklama, tutar, olusturma_tarihi) 
-       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Istanbul') 
+      `INSERT INTO giderler (tarih, kategori, aciklama, tutar) 
+       VALUES ($1, $2, $3, $4) 
        RETURNING *`,
       [tarih, kategori, aciklama, tutar]
     );
