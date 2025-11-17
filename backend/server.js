@@ -49,7 +49,10 @@ app.get('/api/musteriler/:id', async (req, res) => {
     
     const musteri = await pool.query('SELECT * FROM musteriler WHERE id = $1', [id]);
     const araclar = await pool.query(
-      'SELECT * FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC',
+      `SELECT id, musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, 
+              kalan_tutar, odeme_yontemi, notlar, durum,
+              timezone('Europe/Istanbul', gelis_tarihi) as gelis_tarihi
+       FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC`,
       [id]
     );
     
@@ -135,7 +138,11 @@ app.get('/api/musteriler/telefon/:telefon', async (req, res) => {
 app.get('/api/islemler', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.*, m.ad_soyad, m.telefon
+      SELECT a.id, a.musteri_id, a.plaka, a.marka, a.model, a.hizmet_turu, 
+             a.tutar, a.odenen_tutar, a.kalan_tutar, a.odeme_yontemi, 
+             a.notlar, a.durum,
+             timezone('Europe/Istanbul', a.gelis_tarihi) as gelis_tarihi,
+             m.ad_soyad, m.telefon
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       ORDER BY a.gelis_tarihi DESC
@@ -153,7 +160,11 @@ app.get('/api/islemler/tarih', async (req, res) => {
     const { baslangic, bitis } = req.query;
     
     let query = `
-      SELECT a.*, m.ad_soyad, m.telefon
+      SELECT a.id, a.musteri_id, a.plaka, a.marka, a.model, a.hizmet_turu, 
+             a.tutar, a.odenen_tutar, a.kalan_tutar, a.odeme_yontemi, 
+             a.notlar, a.durum,
+             timezone('Europe/Istanbul', a.gelis_tarihi) as gelis_tarihi,
+             m.ad_soyad, m.telefon
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       WHERE 1=1
