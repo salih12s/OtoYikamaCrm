@@ -204,15 +204,15 @@ app.post('/api/islemler', async (req, res) => {
     // İşlem ekle
     const islemResult = await client.query(
       `INSERT INTO arac_islemler 
-       (musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+       (musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum, gelis_tarihi)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Istanbul') RETURNING *`,
       [musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
     );
     
     // Ödeme geçmişi ekle (eğer ödeme yapıldıysa)
     if (odenen_tutar > 0) {
       await client.query(
-        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi) VALUES ($1, $2, $3)',
+        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, odeme_tarihi) VALUES ($1, $2, $3, CURRENT_TIMESTAMP AT TIME ZONE \'Europe/Istanbul\')',
         [islemResult.rows[0].id, odenen_tutar, odeme_yontemi]
       );
     }
@@ -386,7 +386,7 @@ app.post('/api/islemler/:id/odeme', async (req, res) => {
     
     // Ödeme geçmişi ekle
     await client.query(
-      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar) VALUES ($1, $2, $3, $4)',
+      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar, odeme_tarihi) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP AT TIME ZONE \'Europe/Istanbul\')',
       [id, odenen_miktar, odeme_yontemi, notlar]
     );
     
@@ -684,8 +684,8 @@ app.post('/api/giderler', async (req, res) => {
     const { tarih, kategori, aciklama, tutar } = req.body;
     
     const result = await pool.query(
-      `INSERT INTO giderler (tarih, kategori, aciklama, tutar) 
-       VALUES ($1, $2, $3, $4) 
+      `INSERT INTO giderler (tarih, kategori, aciklama, tutar, olusturma_tarihi) 
+       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Istanbul') 
        RETURNING *`,
       [tarih, kategori, aciklama, tutar]
     );
