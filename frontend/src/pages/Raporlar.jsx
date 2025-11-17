@@ -45,7 +45,6 @@ function TabPanel({ children, value, index }) {
 
 export default function Raporlar() {
   const [tabValue, setTabValue] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [gunlukData, setGunlukData] = useState(null);
   const [aylikData, setAylikData] = useState(null);
   const [haftalikData, setHaftalikData] = useState([]);
@@ -64,7 +63,6 @@ export default function Raporlar() {
   });
 
   const loadReports = useCallback(async () => {
-    setLoading(true);
     try {
       switch (tabValue) {
         case 0: // Günlük Rapor
@@ -88,8 +86,6 @@ export default function Raporlar() {
       }
     } catch (error) {
       console.error('Rapor yüklenirken hata:', error);
-    } finally {
-      setLoading(false);
     }
   }, [tabValue, selectedDate]);
 

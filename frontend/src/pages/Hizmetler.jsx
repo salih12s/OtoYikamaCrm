@@ -21,7 +21,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
 } from '@mui/material';
 import {
   Add as AddIcon,

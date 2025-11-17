@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+// Production veya development ortamına göre API URL belirlenir
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://otoyikamacrm-production.up.railway.app/api'
+  : 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,

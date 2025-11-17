@@ -16,7 +16,6 @@ import {
   Alert,
   MenuItem,
   InputAdornment,
-  IconButton,
 } from '@mui/material';
 import {
   CheckCircle as CheckIcon,
@@ -39,6 +38,7 @@ export default function Islemler() {
   const [editDialog, setEditDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [durumFilter, setDurumFilter] = useState('Hepsi');
+  const [tarihFilter, setTarihFilter] = useState('Tümü');
   const [paymentData, setPaymentData] = useState({
     odenen_miktar: '',
     odeme_yontemi: 'Nakit',
@@ -162,7 +162,10 @@ export default function Islemler() {
     
     const matchesDurum = durumFilter === 'Hepsi' || islem.durum === durumFilter;
     
-    return matchesSearch && matchesDurum;
+    const matchesTarih = tarihFilter === 'Tümü' || 
+      (tarihFilter === 'Bugün' && new Date(islem.gelis_tarihi).toDateString() === new Date().toDateString());
+    
+    return matchesSearch && matchesDurum && matchesTarih;
   });
 
   if (loading) {
@@ -191,7 +194,7 @@ export default function Islemler() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 placeholder="Plaka, müşteri adı, telefon ile ara..."
@@ -200,7 +203,20 @@ export default function Islemler() {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={6} sm={3}>
+              <TextField
+                select
+                fullWidth
+                label="Tarih"
+                value={tarihFilter}
+                onChange={(e) => setTarihFilter(e.target.value)}
+                size="small"
+              >
+                <MenuItem value="Tümü">Tümü</MenuItem>
+                <MenuItem value="Bugün">Bugün</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={6} sm={3}>
               <TextField
                 select
                 fullWidth
@@ -220,7 +236,7 @@ export default function Islemler() {
       </Card>
 
       {filteredList.length === 0 ? (
-        <Alert severity="info">{searchTerm || durumFilter !== 'Hepsi' ? 'Arama kriterlerine uygun işlem bulunamadı.' : 'Henüz işlem bulunmuyor.'}</Alert>
+        <Alert severity="info">{searchTerm || durumFilter !== 'Hepsi' || tarihFilter !== 'Tümü' ? 'Arama kriterlerine uygun işlem bulunamadı.' : 'Henüz işlem bulunmuyor.'}</Alert>
       ) : (
         <Grid container spacing={2}>
           {filteredList.map((islem) => (
@@ -270,7 +286,15 @@ export default function Islemler() {
                   </Box>
 
                   <Typography variant="caption" color="text.secondary">
-                    📅 {new Date(islem.gelis_tarihi).toLocaleString('tr-TR')}
+                    📅 {new Date(islem.gelis_tarihi).toLocaleString('tr-TR', { 
+                      timeZone: 'Europe/Istanbul',
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    })}
                   </Typography>
 
                   <Box sx={{ display: 'flex', gap: 1, mt: 2, flexWrap: 'wrap' }}>
