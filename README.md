@@ -1,120 +1,274 @@
 # 🚗 Oto Yıkama CRM Sistemi
 
-Profesyonel oto yıkama işletmeleri için geliştirilmiş, **tamamen mobil uyumlu**, **modern** ve **kullanıcı dostu** CRM (Müşteri İlişkileri Yönetimi) sistemi. Telefondan veri girişi için özel olarak optimize edilmiştir.
+Modern ve mobil uyumlu oto yıkama işletmesi yönetim sistemi. Müşteri takibi, işlem yönetimi, borç takibi ve detaylı raporlama özellikleri sunar. **Xiaomi 12 Pro 5G için özel olarak optimize edilmiştir.**
 
 ---
 
-## 📋 İçindekiler
+## 📱 Özellikler
 
-1. [Özellikler](#-özellikler)
-2. [Teknolojiler](#-teknolojiler)
-3. [Kurulum](#-kurulum)
-4. [Veritabanı Yapısı](#-veritabanı-yapısı)
-5. [API Dokümantasyonu](#-api-dokümantasyonu)
-6. [Kullanım Kılavuzu](#-kullanım-kılavuzu)
-7. [Ekran Görüntüleri](#-ekran-görüntüleri)
-8. [Sistem Mimarisi](#-sistem-mimarisi)
-9. [Güvenlik](#-güvenlik)
-10. [Sorun Giderme](#-sorun-giderme)
+### 🎯 Ana Özellikler
+- **Mobil Uyumlu Tasarım**: Xiaomi 12 Pro 5G için optimize edilmiş responsive arayüz
+- **Karanlık Tema**: Modern ve göz yormayan Material-UI dark mode
+- **Türkçe Dil Desteği**: Tamamen Türkçe arayüz ve tarih formatları (Türkiye saat dilimi)
+- **Gerçek Zamanlı Güncellemeler**: Anında veri senkronizasyonu
+
+### 💼 İşlem Yönetimi
+- Hızlı yeni işlem kaydı
+- Araç plakası, marka, model bilgileri
+- Müşteri bilgileri (opsiyonel - boş bırakılabilir)
+- Hizmet türü seçimi (kullanıcı tanımlı)
+- Ödeme yöntemi (Nakit, Kredi Kartı, Banka Transferi)
+- Kısmi ödeme desteği
+- Durum takibi (Bekliyor, İşlemde, Teslim Edildi)
+- **Plaka ve müşteri bazlı arama**
+- **Durum filtreleme**
+- İşlem düzenleme ve silme
+
+### 👥 Müşteri Yönetimi
+- Müşteri kayıt sistemi (ad-soyad ve telefon opsiyonel)
+- Toplam harcama takibi
+- Aktif bakiye/borç takibi
+- **Müşteri arama ve filtreleme**
+- **Sıralama seçenekleri** (tarih, isim, harcama, borç)
+- Özet istatistikler (toplam müşteri, harcama, borç, borçlu sayısı)
+
+### 💰 Borç Takip Sistemi
+- Borçlu müşteri listesi
+- Toplam borç özeti
+- Kısmi ödeme alma
+- Ödeme geçmişi
+- **Müşteri/plaka bazlı arama**
+- **Borç tutarına göre sıralama** (çok → az, az → çok)
+- **Tarih bazlı sıralama** (yeni → eski, eski → yeni)
+
+### 📊 Raporlama
+- **Bu Ayki Gelir**: Aylık toplam gelir ve işlem sayısı
+- **Günlük Gelir**: Seçilen tarih için günlük gelir, işlem sayısı ve ödeme yöntemleri dağılımı
+- **Tahsil Edilmedi**: Günlük tahsil edilmeyen tutar
+- **Haftalık Raporlar**: Son 7 günlük gelir tablosu
+- **Gider Yönetimi**: 
+  - 8 kategori (Elektrik, Su, Doğalgaz, Kira, Maaş, Temizlik Malzemeleri, Bakım-Onarım, Diğer)
+  - Gider ekleme/düzenleme/silme
+  - Kategori bazlı özetler
+  - Toplam gider takibi
+
+### 🔧 Hizmet Yönetimi
+- **Kullanıcı tanımlı hizmet türleri** (sadece hizmet adı)
+- Hizmet ekleme/düzenleme/silme
+- Aktif/pasif hizmet yönetimi
 
 ---
 
-## 🎯 Özellikler
+## 🛠️ Teknolojiler
 
-### ✅ Temel Özellikler
+### Frontend
+- **React 18.2.0**: Modern UI kütüphanesi
+- **Material-UI 5.15.0**: Komponent kütüphanesi (Dark Mode)
+- **React Router 6.20.0**: Sayfa yönlendirme
+- **Axios 1.6.2**: HTTP istekleri
 
-#### 1. **Araç İşlem Yönetimi**
-- **Detaylı Kayıt Sistemi:**
-  - Plaka numarası (zorunlu)
-  - Araç markası ve modeli
-  - Hizmet türü seçimi
-  - Tutar ve ödeme bilgileri
-  - Özel notlar (müşteri istekleri)
-  - İşlem durumu takibi
-  
-- **CRUD İşlemleri:**
-  - ✅ Yeni işlem ekleme
-  - ✅ İşlem düzenleme
-  - ✅ İşlem silme
-  - ✅ İşlem listeleme ve filtreleme
-  - ✅ Durum güncelleme (Bekliyor → İşlemde → Teslim Edildi)
+### Backend
+- **Node.js 18+**: JavaScript runtime
+- **Express.js 4.18.2**: Web framework
+- **PostgreSQL**: Veritabanı (Railway cloud)
+- **pg 8.11.3**: PostgreSQL client (Europe/Istanbul timezone)
+- **dotenv 16.3.1**: Ortam değişkenleri
+- **cors 2.8.5**: CORS yönetimi
 
-- **Ödeme Yönetimi:**
-  - Nakit, Kart, Havale seçenekleri
-  - Kısmi ödeme (Partial Payment) desteği
-  - Ödeme geçmişi takibi
-  - Otomatik kalan tutar hesaplama
+### Veritabanı Yapısı
+- **musteriler**: Müşteri bilgileri (ad_soyad ve telefon NULL olabilir), harcama ve borç takibi
+- **hizmetler**: Kullanıcı tanımlı hizmet türleri (sadece hizmet_adi)
+- **arac_islemler**: İşlem kayıtları, ödeme ve durum bilgileri
+- **odeme_gecmisi**: Ödeme hareketleri
+- **giderler**: İşletme giderleri ve kategorileri
 
-#### 2. **Müşteri Yönetimi**
-- **Müşteri Profili:**
-  - Ad-Soyad
-  - Telefon numarası (benzersiz)
-  - Kayıt tarihi
-  - Toplam harcama tutarı (otomatik hesaplanan)
-  - Aktif bakiye/borç durumu
-  - Özel notlar
+---
 
-- **CRUD İşlemleri:**
-  - ✅ Yeni müşteri ekleme
-  - ✅ Müşteri düzenleme
-  - ✅ Müşteri silme (güvenli silme kontrolü)
-  - ✅ Müşteri listeleme
-  - ✅ Telefon ile hızlı arama
+## 📋 Kurulum
 
-- **Müşteri Geçmişi:**
-  - Tüm işlem kayıtları
-  - Araç bilgileri
-  - Toplam harcama
-  - Son geliş tarihi
-  - Borç durumu
+### Gereksinimler
+- Node.js 18+ 
+- PostgreSQL veritabanı
+- npm veya yarn
 
-#### 3. **Kısmi Ödeme Sistemi (Partial Payment)**
-- **Özellikler:**
-  - Birden fazla taksitle ödeme alma
-  - Her ödeme için ayrı kayıt
-  - Ödeme geçmişi izleme
-  - Otomatik kalan tutar güncelleme
-  - Müşteri bakiyesi otomatik güncelleme
+### 1. Projeyi Klonlayın
+```bash
+git clone https://github.com/salih12s/OtoYikamaCrm.git
+cd OtoYikamaCrm
+```
 
-- **Kullanım Senaryosu:**
-  ```
-  Örnek: Araç yıkama ücreti: 500₺
-  1. Ödeme: 200₺ (Kalan: 300₺)
-  2. Ödeme: 150₺ (Kalan: 150₺)
-  3. Ödeme: 150₺ (Kalan: 0₺) ✅ Ödeme Tamamlandı
-  ```
+### 2. Backend Kurulumu
+```bash
+cd backend
+npm install
+```
 
-#### 4. **Hizmet Tanımları**
-- **Hazır Hizmetler:**
-  - İç-Dış Yıkama (30 dk)
-  - Detaylı Temizlik (120 dk)
-  - Koltuk Yıkama (90 dk)
-  - Motor Yıkama (45 dk)
-  - Pasta/Cila (180 dk)
-  - Boya Koruma (240 dk)
-  - Cam Filmi (120 dk)
-  - Oto Kuaför (150 dk)
+### 3. Veritabanı Ayarları
+`backend/.env` dosyası oluşturun:
+```env
+DB_HOST=your_db_host
+DB_PORT=5432
+DB_NAME=your_db_name
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+PORT=5000
+```
 
-- **CRUD İşlemleri:**
-  - ✅ Yeni hizmet ekleme
-  - ✅ Hizmet düzenleme
-  - ✅ Hizmet silme (Soft Delete - pasif yapma)
-  - ✅ Hizmet listeleme
-  - Hizmet kategorileri
-  - Tahmini süre bilgisi
+### 4. Veritabanı Tablolarını Oluşturun
+```bash
+node init-db.js
+```
 
-#### 5. **Durum Takibi**
-- **İşlem Durumları:**
-  - 🟡 **Bekliyor** - Araç henüz işleme alınmadı
-  - 🔵 **İşlemde** - Araç şu an yıkanıyor
-  - 🟢 **Teslim Edildi** - İşlem tamamlandı, araç teslim edildi
+### 5. Frontend Kurulumu
+```bash
+cd ../frontend
+npm install
+```
 
-- **Durum Geçişleri:**
-  - Tek tıkla durum değiştirme
-  - Otomatik zaman damgası
-  - Durum geçmişi
+### 6. Uygulamayı Başlatın
 
-### 📊 Raporlama Sistemi
+**Backend:**
+```bash
+cd backend
+node server.js
+```
+Backend http://localhost:5000 adresinde çalışacak.
+
+**Frontend:**
+```bash
+cd frontend
+npm start
+```
+Frontend http://localhost:3000 adresinde açılacak.
+
+---
+
+## 🚀 Railway Deployment
+
+Proje Railway platformunda deploy edilebilir. Detaylı talimatlar için [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) dosyasına bakın.
+
+### Hızlı Deploy
+1. Railway hesabı oluşturun
+2. PostgreSQL eklentisi ekleyin
+3. Veritabanı bilgilerini ortam değişkenlerine ekleyin
+4. GitHub repo'nuzu bağlayın
+5. Deploy edin
+
+---
+
+## 📱 Kullanım Kılavuzu
+
+### Ana Ekran (Dashboard)
+6 ana menü butonu:
+- **Yeni İşlem**: Hızlı işlem kaydı
+- **İşlemler**: Tüm işlemleri görüntüle ve yönet
+- **Borç Takip**: Borçlu müşterileri takip et
+- **Raporlar**: Gelir ve gider raporları
+- **Hizmet Yönetimi**: Hizmet türlerini yönet
+- **Müşteri Listesi**: Tüm müşterileri görüntüle
+
+### Yeni İşlem Ekleme
+1. Müşteri bilgilerini girin (opsiyonel)
+2. Plaka numarasını girin (zorunlu)
+3. Araç bilgilerini girin
+4. Hizmet türünü seçin
+5. Tutar ve ödeme bilgilerini girin
+6. Kaydet
+
+### Borç Ödeme Alma
+1. Borç Takip sayfasına git
+2. Borçlu müşteriyi bul
+3. "Ödeme Al" butonuna tıkla
+4. Ödeme tutarını ve yöntemini gir
+5. Kaydet
+
+### Rapor Görüntüleme
+1. Raporlar sayfasına git
+2. **Günlük**: Tarih seçerek günlük geliri görüntüle
+3. **Haftalık**: Son 7 günün gelirine bak
+4. **Giderler**: Gider ekle ve kategori bazlı özetleri gör
+
+---
+
+## 🔒 Güvenlik
+
+- SQL injection koruması (Parametreli sorgular)
+- CORS ayarları
+- Input validation
+- Transaction yönetimi (Ödeme işlemleri)
+- Cascade delete koruması (İşlemleri olan müşteri silinemez)
+
+---
+
+## 📞 İletişim
+
+**GitHub**: [salih12s](https://github.com/salih12s)  
+**Repository**: [OtoYikamaCrm](https://github.com/salih12s/OtoYikamaCrm)
+
+---
+
+## 📄 Lisans
+
+Bu proje özel kullanım için geliştirilmiştir.
+
+---
+
+## 🔄 Versiyon Geçmişi
+
+### v1.0.0 (17 Kasım 2025)
+- ✅ İlk versiyon yayınlandı
+- ✅ Temel CRUD işlemleri
+- ✅ Mobil responsive tasarım (Xiaomi 12 Pro 5G)
+- ✅ Borç takip sistemi
+- ✅ Gider yönetimi (8 kategori)
+- ✅ Filtreleme ve arama özellikleri
+- ✅ Türkiye saat dilimi desteği (Europe/Istanbul)
+- ✅ Railway deployment yapılandırması
+- ✅ Hizmet yönetimi sadeleştirildi (sadece hizmet adı)
+- ✅ Müşteri bilgileri opsiyonel hale getirildi
+- ✅ Bu ayki gelir ve günlük gelir kartları eklendi
+
+---
+
+## 🆘 Sorun Giderme
+
+### Backend başlamıyor
+- `.env` dosyasının doğru yapılandırıldığından emin olun
+- PostgreSQL veritabanının çalıştığını kontrol edin
+- Port 5000'in kullanımda olmadığını kontrol edin
+
+### Frontend API'ye bağlanamıyor
+- Backend'in çalıştığından emin olun
+- `frontend/src/api.js` içindeki API_URL'yi kontrol edin (http://localhost:5000/api)
+- CORS ayarlarını kontrol edin
+
+### Veritabanı hataları
+- `node init-db.js` scriptini çalıştırın
+- Veritabanı bağlantı bilgilerini kontrol edin
+- PostgreSQL servisinin çalıştığından emin olun
+
+### Saat/Tarih hataları
+- Backend'de timezone "Europe/Istanbul" olarak ayarlandı
+- Yeni işlemlerde saat Türkiye saatine göre kaydedilir
+
+---
+
+## 🎯 Gelecek Özellikler
+
+- [ ] Kullanıcı giriş sistemi
+- [ ] Çoklu şube desteği
+- [ ] SMS/Email bildirimleri
+- [ ] QR kod ile müşteri takibi
+- [ ] Mobil uygulama (React Native)
+- [ ] Excel/PDF rapor dışa aktarma
+- [ ] Stok yönetimi
+- [ ] Personel takip sistemi
+- [ ] Randevu sistemi
+- [ ] Otomatik SMS hatırlatıcılar
+
+---
+
+**Not**: Bu proje aktif olarak geliştirilmektedir. Önerileriniz için issue açabilirsiniz.
 
 #### 1. **Dashboard (Ana Sayfa)**
 - **Anlık Veriler:**
