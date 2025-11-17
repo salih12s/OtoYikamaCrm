@@ -49,7 +49,7 @@ app.get('/api/musteriler/:id', async (req, res) => {
     
     const musteri = await pool.query('SELECT * FROM musteriler WHERE id = $1', [id]);
     const araclar = await pool.query(
-      'SELECT *, (gelis_tarihi AT TIME ZONE \'UTC\' AT TIME ZONE \'Europe/Istanbul\') as gelis_tarihi FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC',
+      'SELECT * FROM arac_islemler WHERE musteri_id = $1 ORDER BY gelis_tarihi DESC',
       [id]
     );
     
@@ -135,9 +135,7 @@ app.get('/api/musteriler/telefon/:telefon', async (req, res) => {
 app.get('/api/islemler', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.*, 
-             (a.gelis_tarihi AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul') as gelis_tarihi,
-             m.ad_soyad, m.telefon
+      SELECT a.*, m.ad_soyad, m.telefon
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       ORDER BY a.gelis_tarihi DESC
@@ -155,9 +153,7 @@ app.get('/api/islemler/tarih', async (req, res) => {
     const { baslangic, bitis } = req.query;
     
     let query = `
-      SELECT a.*,
-             (a.gelis_tarihi AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul') as gelis_tarihi,
-             m.ad_soyad, m.telefon
+      SELECT a.*, m.ad_soyad, m.telefon
       FROM arac_islemler a
       LEFT JOIN musteriler m ON a.musteri_id = m.id
       WHERE 1=1
@@ -209,8 +205,7 @@ app.post('/api/islemler', async (req, res) => {
     const islemResult = await client.query(
       `INSERT INTO arac_islemler 
        (musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *,
-       (gelis_tarihi AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul') as gelis_tarihi`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
       [musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
     );
     
