@@ -221,7 +221,7 @@ app.post('/api/islemler', async (req, res) => {
     // Ödeme geçmişi ekle (eğer ödeme yapıldıysa)
     if (odenen_tutar > 0) {
       await client.query(
-        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi) VALUES ($1, $2, $3)',
+        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, odeme_tarihi) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)',
         [islemResult.rows[0].id, odenen_tutar, odeme_yontemi]
       );
     }
@@ -387,7 +387,7 @@ app.post('/api/islemler/:id/odeme', async (req, res) => {
     
     // Ödeme geçmişi ekle
     await client.query(
-      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar) VALUES ($1, $2, $3, $4)',
+      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar, odeme_tarihi) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)',
       [id, odenen_miktar, odeme_yontemi, notlar]
     );
     
@@ -713,8 +713,8 @@ app.post('/api/giderler', async (req, res) => {
     const { tarih, kategori, aciklama, tutar } = req.body;
     
     const result = await pool.query(
-      `INSERT INTO giderler (tarih, kategori, aciklama, tutar) 
-       VALUES ($1, $2, $3, $4) 
+      `INSERT INTO giderler (tarih, kategori, aciklama, tutar, olusturma_tarihi) 
+       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) 
        RETURNING *`,
       [tarih, kategori, aciklama, tutar]
     );
@@ -816,8 +816,8 @@ app.post('/api/notlar', async (req, res) => {
     const { baslik, icerik, renk } = req.body;
     
     const result = await pool.query(
-      `INSERT INTO notlar (baslik, icerik, renk) 
-       VALUES ($1, $2, $3) 
+      `INSERT INTO notlar (baslik, icerik, renk, olusturma_tarihi, guncelleme_tarihi) 
+       VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) 
        RETURNING *`,
       [baslik, icerik, renk || 'yellow']
     );
