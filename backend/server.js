@@ -210,16 +210,12 @@ app.post('/api/islemler', async (req, res) => {
     
     const kalan_tutar = parseFloat(tutar) - parseFloat(odenen_tutar || 0);
     
-    // Türkiye saatini hesapla (UTC+3)
-    const now = new Date();
-    const turkeyTime = new Date(now.getTime() + (3 * 60 * 60 * 1000));
-    
     // İşlem ekle
     const islemResult = await client.query(
       `INSERT INTO arac_islemler 
        (plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum, gelis_tarihi)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-      [plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor', turkeyTime]
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP) RETURNING *`,
+      [plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
     );
     
     // Ödeme geçmişi ekle (eğer ödeme yapıldıysa)
