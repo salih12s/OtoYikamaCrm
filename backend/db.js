@@ -9,11 +9,12 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
-// Türkiye saatine çevir (UTC+3)
-pool.on('connect', (client) => {
-  client.query("SET timezone = 'Europe/Istanbul'", (err) => {
-    if (err) console.error('Timezone ayarlanamadı:', err);
-  });
-});
+// Türkiye saati için yardımcı fonksiyon
+const getTurkeyTime = () => {
+  const now = new Date();
+  // UTC'den Türkiye saatine çevir (UTC+3)
+  const turkeyTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Istanbul' }));
+  return turkeyTime;
+};
 
-module.exports = pool;
+module.exports = { pool, getTurkeyTime };

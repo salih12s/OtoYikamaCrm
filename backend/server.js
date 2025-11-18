@@ -3,7 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
-const pool = require('./db');
+const { pool, getTurkeyTime } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -209,20 +209,21 @@ app.post('/api/islemler', async (req, res) => {
     } = req.body;
     
     const kalan_tutar = parseFloat(tutar) - parseFloat(odenen_tutar || 0);
+    const turkeyTime = getTurkeyTime();
     
     // İşlem ekle
     const islemResult = await client.query(
       `INSERT INTO arac_islemler 
        (plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum, gelis_tarihi)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP) RETURNING *`,
-      [plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      [plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor', turkeyTime]
     );
     
     // Ödeme geçmişi ekle (eğer ödeme yapıldıysa)
     if (odenen_tutar > 0) {
       await client.query(
-        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, odeme_tarihi) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)',
-        [islemResult.rows[0].id, odenen_tutar, odeme_yontemi]
+        'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, odeme_tarihi) VALUES ($1, $2, $3, $4)',
+        [islemResult.rows[0].id, odenen_tutar, odeme_yontemi, turkeyTime]
       );
     }
     
@@ -386,9 +387,10 @@ app.post('/api/islemler/:id/odeme', async (req, res) => {
     );
     
     // Ödeme geçmişi ekle
+    const turkeyTime = getTurkeyTime();
     await client.query(
-      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar, odeme_tarihi) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)',
-      [id, odenen_miktar, odeme_yontemi, notlar]
+      'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi, notlar, odeme_tarihi) VALUES ($1, $2, $3, $4, $5)',
+      [id, odenen_miktar, odeme_yontemi, notlar, turkeyTime]
     );
     
     // Müşteri bakiyesini güncelle
@@ -711,12 +713,13 @@ app.get('/api/giderler', async (req, res) => {
 app.post('/api/giderler', async (req, res) => {
   try {
     const { tarih, kategori, aciklama, tutar } = req.body;
+    const turkeyTime = getTurkeyTime();
     
     const result = await pool.query(
       `INSERT INTO giderler (tarih, kategori, aciklama, tutar, olusturma_tarihi) 
-       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) 
+       VALUES ($1, $2, $3, $4, $5) 
        RETURNING *`,
-      [tarih, kategori, aciklama, tutar]
+      [tarih, kategori, aciklama, tutar, turkeyTime]
     );
     
     res.json(result.rows[0]);
@@ -814,12 +817,13 @@ app.get('/api/notlar', async (req, res) => {
 app.post('/api/notlar', async (req, res) => {
   try {
     const { baslik, icerik, renk } = req.body;
+    const turkeyTime = getTurkeyTime();
     
     const result = await pool.query(
       `INSERT INTO notlar (baslik, icerik, renk, olusturma_tarihi, guncelleme_tarihi) 
-       VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) 
+       VALUES ($1, $2, $3, $4, $5) 
        RETURNING *`,
-      [baslik, icerik, renk || 'yellow']
+      [baslik, icerik, renk || 'yellow', turkeyTime, turkeyTime]
     );
     
     res.json(result.rows[0]);
