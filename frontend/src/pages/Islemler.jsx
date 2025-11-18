@@ -286,15 +286,19 @@ export default function Islemler() {
                   </Box>
 
                   <Typography variant="caption" color="text.secondary">
-                    📅 {new Date(islem.gelis_tarihi).toLocaleString('tr-TR', { 
-                      timeZone: 'Europe/Istanbul',
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit'
-                    })}
+                    📅 {(() => {
+                      const date = new Date(islem.gelis_tarihi);
+                      // PostgreSQL UTC olarak saklar, 3 saat geriye al
+                      date.setHours(date.getHours() - 3);
+                      return date.toLocaleString('tr-TR', { 
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                      });
+                    })()}
                   </Typography>
 
                   <Box sx={{ display: 'flex', gap: 1, mt: 2, flexWrap: 'wrap' }}>

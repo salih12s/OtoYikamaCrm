@@ -13,23 +13,13 @@ async function initDatabase() {
   const client = await pool.connect();
   
   try {
-    console.log('🔧 Mevcut tablolar siliniyor...');
-    
-    // Önce tüm tabloları sil (CASCADE ile bağlantıları da siler)
-    await client.query('DROP TABLE IF EXISTS giderler CASCADE');
-    await client.query('DROP TABLE IF EXISTS odeme_gecmisi CASCADE');
-    await client.query('DROP TABLE IF EXISTS arac_islemler CASCADE');
-    await client.query('DROP TABLE IF EXISTS hizmetler CASCADE');
-    await client.query('DROP TABLE IF EXISTS musteriler CASCADE');
-    
-    console.log('✅ Tüm tablolar silindi\n');
-    console.log('🔧 Veritabanı tabloları oluşturuluyor...');
+    console.log('🔧 Veritabanı tabloları oluşturuluyor (mevcut veriler korunacak)...');
 
-    // 1. Müşteriler Tablosu
+    // 1. Müşteriler Tablosu (Opsiyonel - sadece özel müşteriler için)
     await client.query(`
       CREATE TABLE IF NOT EXISTS musteriler (
         id SERIAL PRIMARY KEY,
-        plaka VARCHAR(20) UNIQUE NOT NULL,
+        plaka VARCHAR(20) UNIQUE,
         kayit_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         toplam_harcama DECIMAL(10, 2) DEFAULT 0,
         aktif_bakiye DECIMAL(10, 2) DEFAULT 0,
@@ -53,7 +43,6 @@ async function initDatabase() {
     await client.query(`
       CREATE TABLE IF NOT EXISTS arac_islemler (
         id SERIAL PRIMARY KEY,
-        musteri_id INTEGER REFERENCES musteriler(id) ON DELETE SET NULL,
         plaka VARCHAR(20) NOT NULL,
         marka VARCHAR(100),
         model VARCHAR(100),

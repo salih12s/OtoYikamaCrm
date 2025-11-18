@@ -142,13 +142,11 @@ app.get('/api/musteriler/plaka/:plaka', async (req, res) => {
 app.get('/api/islemler', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT a.id, a.musteri_id, a.plaka, a.marka, a.model, a.hizmet_turu, 
-             a.tutar, a.odenen_tutar, a.kalan_tutar, a.odeme_yontemi, 
-             a.notlar, a.durum, a.gelis_tarihi,
-             m.plaka as musteri_plaka
-      FROM arac_islemler a
-      LEFT JOIN musteriler m ON a.musteri_id = m.id
-      ORDER BY a.gelis_tarihi DESC
+      SELECT id, plaka, marka, model, hizmet_turu, 
+             tutar, odenen_tutar, kalan_tutar, odeme_yontemi, 
+             notlar, durum, gelis_tarihi
+      FROM arac_islemler
+      ORDER BY gelis_tarihi DESC
       LIMIT 100
     `);
     res.json(result.rows);
@@ -163,12 +161,10 @@ app.get('/api/islemler/tarih', async (req, res) => {
     const { baslangic, bitis } = req.query;
     
     let query = `
-      SELECT a.id, a.musteri_id, a.plaka, a.marka, a.model, a.hizmet_turu, 
-             a.tutar, a.odenen_tutar, a.kalan_tutar, a.odeme_yontemi, 
-             a.notlar, a.durum, a.gelis_tarihi,
-             m.plaka as musteri_plaka
-      FROM arac_islemler a
-      LEFT JOIN musteriler m ON a.musteri_id = m.id
+      SELECT id, plaka, marka, model, hizmet_turu, 
+             tutar, odenen_tutar, kalan_tutar, odeme_yontemi, 
+             notlar, durum, gelis_tarihi
+      FROM arac_islemler
       WHERE 1=1
     `;
     const params = [];
@@ -217,9 +213,9 @@ app.post('/api/islemler', async (req, res) => {
     // İşlem ekle
     const islemResult = await client.query(
       `INSERT INTO arac_islemler 
-       (musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-      [musteri_id, plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
+       (plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+      [plaka, marka, model, hizmet_turu, tutar, odenen_tutar, kalan_tutar, odeme_yontemi, notlar, durum || 'Bekliyor']
     );
     
     // Ödeme geçmişi ekle (eğer ödeme yapıldıysa)
@@ -227,14 +223,6 @@ app.post('/api/islemler', async (req, res) => {
       await client.query(
         'INSERT INTO odeme_gecmisi (arac_islem_id, odenen_miktar, odeme_yontemi) VALUES ($1, $2, $3)',
         [islemResult.rows[0].id, odenen_tutar, odeme_yontemi]
-      );
-    }
-    
-    // Müşteri bilgilerini güncelle
-    if (musteri_id) {
-      await client.query(
-        'UPDATE musteriler SET toplam_harcama = toplam_harcama + $1, aktif_bakiye = aktif_bakiye + $2 WHERE id = $3',
-        [parseFloat(odenen_tutar || 0), kalan_tutar, musteri_id]
       );
     }
     
