@@ -837,13 +837,14 @@ app.put('/api/notlar/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { baslik, icerik, renk } = req.body;
+    const turkeyTime = getTurkeyTime();
     
     const result = await pool.query(
       `UPDATE notlar 
-       SET baslik = $1, icerik = $2, renk = $3, guncelleme_tarihi = CURRENT_TIMESTAMP
-       WHERE id = $4 
+       SET baslik = $1, icerik = $2, renk = $3, guncelleme_tarihi = $4
+       WHERE id = $5 
        RETURNING *`,
-      [baslik, icerik, renk, id]
+      [baslik, icerik, renk, turkeyTime, id]
     );
     
     res.json(result.rows[0]);
