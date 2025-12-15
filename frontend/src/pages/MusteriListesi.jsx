@@ -26,7 +26,7 @@ import {
   Person as PersonIcon,
   CalendarMonth as CalendarIcon,
 } from '@mui/icons-material';
-import { musteriler } from '../api';
+import { musteriler, istatistikler } from '../api';
 
 export default function MusteriListesi() {
   const [musteriList, setMusteriList] = useState([]);
@@ -34,9 +34,14 @@ export default function MusteriListesi() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('kayit_tarihi');
+  const [aylikIstatistik, setAylikIstatistik] = useState({
+    aylik_musteri: 0,
+    aylik_kazanc: 0
+  });
 
   useEffect(() => {
     fetchMusteriler();
+    fetchAylikIstatistik();
   }, []);
 
   const fetchMusteriler = async () => {
@@ -52,14 +57,24 @@ export default function MusteriListesi() {
     }
   };
 
+  const fetchAylikIstatistik = async () => {
+    try {
+      const response = await istatistikler.aylik();
+      setAylikIstatistik(response.data);
+    } catch (error) {
+      console.error('Aylık istatistikler yüklenemedi:', error);
+    }
+  };
+
   const filterAndSort = useCallback(() => {
     let filtered = [...musteriList];
 
-    // Arama filtresi
+    // Arama filtresi (plaka ve notlar)
     if (searchTerm) {
       filtered = filtered.filter(
         (musteri) =>
-          musteri.plaka?.toLowerCase().includes(searchTerm.toLowerCase())
+          musteri.plaka?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          musteri.notlar?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -106,7 +121,7 @@ export default function MusteriListesi() {
             <Grid item xs={12} sm={8}>
               <TextField
                 fullWidth
-                placeholder="Plaka ile ara..."
+                placeholder="Plaka veya not ile ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 InputProps={{
@@ -152,9 +167,29 @@ export default function MusteriListesi() {
         <Grid item xs={6} sm={3}>
           <Card>
             <CardContent>
+              <Typography variant="body2" color="text.secondary">Aylık Müşteri</Typography>
+              <Typography variant="h4" fontWeight="bold" color="primary">
+                {aylikIstatistik.aylik_musteri}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Card>
+            <CardContent>
               <Typography variant="body2" color="text.secondary">Toplam gelir</Typography>
               <Typography variant="h5" fontWeight="bold" color="success.main">
                 ₺{filteredList.reduce((sum, m) => sum + parseFloat(m.toplam_harcama || 0), 0).toFixed(2)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="body2" color="text.secondary">Aylık Kazanç</Typography>
+              <Typography variant="h5" fontWeight="bold" color="success.main">
+                ₺{aylikIstatistik.aylik_kazanc.toFixed(2)}
               </Typography>
             </CardContent>
           </Card>
@@ -183,66 +218,69 @@ export default function MusteriListesi() {
 
       {/* Müşteri Listesi Tablosu */}
       <Card>
-        <CardContent>
+        <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
           {filteredList.length === 0 ? (
             <Alert severity="info">
               {searchTerm ? 'Arama kriterlerine uygun müşteri bulunamadı.' : 'Henüz müşteri kaydı bulunmuyor.'}
             </Alert>
           ) : (
-            <TableContainer component={Paper}>
-              <Table>
+            <Box sx={{ overflowX: 'auto' }}>
+              <Table size="small" sx={{ minWidth: 400 }}>
                 <TableHead>
-                  <TableRow>
-                    <TableCell><strong>Plaka</strong></TableCell>
-                    <TableCell align="right"><strong>Gelir</strong></TableCell>
-                    <TableCell align="right"><strong>Borç</strong></TableCell>
-                    <TableCell><strong>Kayıt Tarihi</strong></TableCell>
+                  <TableRow sx={{ bgcolor: 'background.default' }}>
+                    <TableCell sx={{ py: 0.5, px: 1, fontSize: '12px', fontWeight: 'bold' }}>Plaka</TableCell>
+                    <TableCell align="center" sx={{ py: 0.5, px: 1, fontSize: '12px', fontWeight: 'bold' }}>Gelir</TableCell>
+                    <TableCell align="center" sx={{ py: 0.5, px: 1, fontSize: '12px', fontWeight: 'bold' }}>Borç</TableCell>
+                    <TableCell align="center" sx={{ py: 0.5, px: 1, fontSize: '12px', fontWeight: 'bold' }}>Kayıt</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredList.map((musteri) => (
-                    <TableRow key={musteri.id} hover>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <PersonIcon fontSize="small" color="primary" />
-                          <Typography fontWeight="700" fontSize="18px">{musteri.plaka || '-'}</Typography>
+                    <TableRow key={musteri.id} hover sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
+                      <TableCell sx={{ py: 0.5, px: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <PersonIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                          <Typography fontWeight="600" fontSize="13px">{musteri.plaka || '-'}</Typography>
                         </Box>
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center" sx={{ py: 0.5, px: 1 }}>
                         <Chip 
-                          label={`₺${parseFloat(musteri.toplam_harcama || 0).toFixed(2)}`}
+                          label={`₺${parseFloat(musteri.toplam_harcama || 0).toFixed(0)}`}
                           color="success"
                           size="small"
-                          sx={{ fontWeight: 'bold' }}
+                          sx={{ fontWeight: 'bold', fontSize: '10px', height: '20px', minWidth: '50px' }}
                         />
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center" sx={{ py: 0.5, px: 1 }}>
                         {parseFloat(musteri.aktif_bakiye || 0) > 0 ? (
                           <Chip 
-                            label={`₺${parseFloat(musteri.aktif_bakiye || 0).toFixed(2)}`}
+                            label={`₺${parseFloat(musteri.aktif_bakiye || 0).toFixed(0)}`}
                             color="error"
                             size="small"
-                            sx={{ fontWeight: 'bold' }}
+                            sx={{ fontWeight: 'bold', fontSize: '10px', height: '20px', minWidth: '50px' }}
                           />
                         ) : (
                           <Chip 
-                            label="₺0.00"
+                            label="₺0"
                             color="default"
                             size="small"
+                            sx={{ fontSize: '10px', height: '20px', minWidth: '40px' }}
                           />
                         )}
                       </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <CalendarIcon fontSize="small" color="action" />
-                          {new Date(musteri.kayit_tarihi).toLocaleDateString('tr-TR')}
-                        </Box>
+                      <TableCell align="center" sx={{ py: 0.5, px: 1 }}>
+                        <Typography fontSize="11px" color="text.secondary">
+                          {new Date(musteri.kayit_tarihi).toLocaleDateString('tr-TR', { 
+                            day: '2-digit', 
+                            month: '2-digit'
+                          })}
+                        </Typography>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </TableContainer>
+            </Box>
           )}
         </CardContent>
       </Card>

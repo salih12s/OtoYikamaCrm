@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { 
@@ -10,9 +10,11 @@ import {
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
 
 // Pages
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import YeniIslem from './pages/YeniIslem';
 import Islemler from './pages/Islemler';
@@ -27,18 +29,18 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#3b82f6',
+      main: '#FFC107',
     },
     secondary: {
-      main: '#10b981',
+      main: '#FFD54F',
     },
     background: {
-      default: '#0f172a',
-      paper: '#1e293b',
+      default: '#161616',
+      paper: '#1a1a1a',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Poppins", "Segoe UI", "Roboto", "Arial", sans-serif',
     fontSize: 18, // Xiaomi 12 Pro için optimize
     button: {
       textTransform: 'none',
@@ -47,21 +49,26 @@ const darkTheme = createTheme({
     },
     h4: {
       fontSize: '2rem', // 32px
-      fontWeight: 700,
+      fontWeight: 800,
+      letterSpacing: '-0.5px',
     },
     h5: {
       fontSize: '1.5rem', // 24px
       fontWeight: 700,
+      letterSpacing: '-0.3px',
     },
     h6: {
       fontSize: '1.25rem', // 20px
-      fontWeight: 600,
+      fontWeight: 700,
+      letterSpacing: '-0.2px',
     },
     body1: {
       fontSize: '1.125rem', // 18px
+      fontWeight: 400,
     },
     body2: {
       fontSize: '1rem', // 16px
+      fontWeight: 400,
     },
   },
   components: {
@@ -127,7 +134,7 @@ const darkTheme = createTheme({
   },
 });
 
-function HeaderBar() {
+function HeaderBar({ onLogout }) {
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
@@ -145,30 +152,90 @@ function HeaderBar() {
             <BackIcon sx={{ fontSize: 28 }} />
           </IconButton>
         )}
+        {isHome && (
+          <Box
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              mr: 2,
+              border: '2px solid #FFC107',
+              boxShadow: '0 0 20px rgba(255, 193, 7, 0.6)',
+            }}
+          >
+            <img 
+              src="/Logo.jpg" 
+              alt="Logo" 
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover' 
+              }} 
+            />
+          </Box>
+        )}
         <Typography 
           variant="h6" 
           component="div" 
           sx={{ 
             flexGrow: 1, 
-            textAlign: isHome ? 'center' : 'left',
-            fontWeight: 'bold',
-            fontSize: '1.375rem' // 22px - Xiaomi 12 Pro için optimize
+            textAlign: isHome ? 'left' : 'left',
+            fontWeight: 800,
+            fontSize: '1.5rem',
+            letterSpacing: '-0.5px',
+            fontFamily: '"Poppins", sans-serif'
           }}
         >
-          🚗 Oto Yıkama CRM
+          Lion Oto Yıkama
         </Typography>
+        <IconButton
+          color="inherit"
+          onClick={onLogout}
+          sx={{ width: 48, height: 48 }}
+          title="Çıkış Yap"
+        >
+          <LogoutIcon sx={{ fontSize: 24 }} />
+        </IconButton>
       </Toolbar>
     </AppBar>
   );
 }
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Sayfa yüklendiğinde localStorage'dan giriş durumunu kontrol et
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(loggedIn);
+  }, []);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    setIsLoggedIn(false);
+  };
+
+  // Giriş yapılmamışsa Login sayfasını göster
+  if (!isLoggedIn) {
+    return (
+      <ThemeProvider theme={darkTheme}>
+        <Login onLogin={handleLogin} />
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Router>
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           {/* Header */}
-          <HeaderBar />
+          <HeaderBar onLogout={handleLogout} />
           
           {/* Main Content */}
           <Box 

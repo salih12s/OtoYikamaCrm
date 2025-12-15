@@ -34,7 +34,8 @@ app.get('/api/musteriler', async (req, res) => {
         MIN(gelis_tarihi) as kayit_tarihi,
         SUM(odenen_tutar) as toplam_harcama,
         SUM(kalan_tutar) as aktif_bakiye,
-        NULL as notlar,
+        STRING_AGG(DISTINCT notlar, ' | ') as notlar,
+        STRING_AGG(DISTINCT CONCAT(COALESCE(marka, ''), ' ', COALESCE(model, '')), ', ') as arac_adi,
         COUNT(*) as toplam_islem,
         MAX(gelis_tarihi) as son_gelis
       FROM arac_islemler
@@ -797,7 +798,55 @@ app.get('/api/giderler/ozet', async (req, res) => {
 });
 
 // ============================================
-// 📝 NOT İŞLEMLERİ
+// � İSTATİSTİK VE RAPORLAR
+// ============================================
+
+// Aylık istatistikler
+app.get('/api/istatistikler/aylik', async (req, res) => {
+  try {
+    // Bu ayın başlangıcı
+    const buAyBaslangic = new Date();
+    buAyBaslangic.setDate(1);
+    buAyBaslangic.setHours(0, 0, 0, 0);
+    
+    // Aylık müşteri sayısı (unique plaka)
+    const aylikMusteriResult = await pool.query(`
+      SELECT COUNT(DISTINCT plaka) as aylik_musteri
+      FROM arac_islemler
+      WHERE gelis_tarihi >= $1
+    `, [buAyBaslangic]);
+    
+    // Aylık kazanç
+    const aylikKazancResult = await pool.query(`
+      SELECT COALESCE(SUM(odenen_tutar), 0) as aylik_kazanc
+      FROM arac_islemler
+      WHERE gelis_tarihi >= $1
+    `, [buAyBaslangic]);
+    
+    // Son 12 ay için aylık kazanç
+    const aylikKazancGrafik = await pool.query(`
+      SELECT 
+        TO_CHAR(gelis_tarihi, 'YYYY-MM') as ay,
+        COALESCE(SUM(odenen_tutar), 0) as kazanc,
+        COUNT(DISTINCT plaka) as musteri_sayisi
+      FROM arac_islemler
+      WHERE gelis_tarihi >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '11 months')
+      GROUP BY TO_CHAR(gelis_tarihi, 'YYYY-MM')
+      ORDER BY ay
+    `);
+    
+    res.json({
+      aylik_musteri: parseInt(aylikMusteriResult.rows[0].aylik_musteri),
+      aylik_kazanc: parseFloat(aylikKazancResult.rows[0].aylik_kazanc),
+      grafik: aylikKazancGrafik.rows
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================
+// �📝 NOT İŞLEMLERİ
 // ============================================
 
 // Tüm notları getir

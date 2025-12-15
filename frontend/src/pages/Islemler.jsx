@@ -158,7 +158,8 @@ export default function Islemler() {
       islem.ad_soyad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       islem.telefon?.includes(searchTerm) ||
       islem.marka?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      islem.model?.toLowerCase().includes(searchTerm.toLowerCase());
+      islem.model?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      islem.notlar?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesDurum = durumFilter === 'Hepsi' || islem.durum === durumFilter;
     
@@ -197,7 +198,7 @@ export default function Islemler() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                placeholder="Plaka, müşteri adı, telefon ile ara..."
+                placeholder="Plaka, müşteri adı, telefon, not ile ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 size="small"

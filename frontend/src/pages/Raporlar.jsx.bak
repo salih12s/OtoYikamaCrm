@@ -345,8 +345,9 @@ export default function Raporlar() {
                 </Table>
               </TableContainer>
             )}
-          </Box>
-        </TabPanel>
+          </CardContent>
+        </Card>
+      </TabPanel>
 
       {/* Giderler */}
       <TabPanel value={tabValue} index={2}>

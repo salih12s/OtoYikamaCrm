@@ -69,4 +69,9 @@ export const notlar = {
   delete: (id) => api.delete(`/notlar/${id}`),
 };
 
+// İstatistik API'leri
+export const istatistikler = {
+  aylik: () => api.get('/istatistikler/aylik'),
+};
+
 export default api;

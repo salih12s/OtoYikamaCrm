@@ -250,21 +250,21 @@ export default function BorcTakip() {
                   {/* Ödeme Bilgileri */}
                   <Grid container spacing={2} sx={{ my: 1 }}>
                     <Grid item xs={4}>
-                      <Paper sx={{ p: 1.5, textAlign: 'center', bgcolor: '#3b82f622' }}>
+                      <Paper sx={{ p: 1.5, textAlign: 'center', bgcolor: '#FFC10722' }}>
                         <Typography variant="caption" color="text.secondary">
                           Toplam Tutar
                         </Typography>
-                        <Typography variant="h6" fontWeight="bold" color="#3b82f6">
+                        <Typography variant="h6" fontWeight="bold" color="#FFC107">
                           ₺{parseFloat(islem.tutar).toFixed(2)}
                         </Typography>
                       </Paper>
                     </Grid>
                     <Grid item xs={4}>
-                      <Paper sx={{ p: 1.5, textAlign: 'center', bgcolor: '#10b98122' }}>
+                      <Paper sx={{ p: 1.5, textAlign: 'center', bgcolor: '#FFC10722' }}>
                         <Typography variant="caption" color="text.secondary">
                           Ödenen
                         </Typography>
-                        <Typography variant="h6" fontWeight="bold" color="#10b981">
+                        <Typography variant="h6" fontWeight="bold" color="#FFC107">
                           ₺{parseFloat(islem.odenen_tutar).toFixed(2)}
                         </Typography>
                       </Paper>

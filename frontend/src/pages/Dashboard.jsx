@@ -89,71 +89,81 @@ export default function Dashboard() {
         <Grid container spacing={1} sx={{ mb: 3 }}>
           <Grid item xs={6} sm={2.4}>
             <Card sx={{ 
-              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              background: '#d2a92fff',
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              borderRadius: 2,
+              boxShadow: '0 4px 12px rgba(210, 169, 47, 0.3)'
             }}>
-              <CardContent sx={{ py: 1.5, px: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
+              <CardContent sx={{ py: 2, px: 1.5 }}>
+                <Typography variant="h4" fontWeight="bold">
                   {durumOzeti.bugun_arac}
                 </Typography>
-                <Typography variant="caption">Bugün Araç</Typography>
+                <Typography variant="body2" fontWeight="500">Bugün Araç</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={6} sm={2.4}>
             <Card sx={{ 
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              background: '#d2a92fff',
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              borderRadius: 2,
+              boxShadow: '0 4px 12px rgba(210, 169, 47, 0.3)'
             }}>
-              <CardContent sx={{ py: 1.5, px: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
+              <CardContent sx={{ py: 2, px: 1.5 }}>
+                <Typography variant="h4" fontWeight="bold">
                   ₺{parseFloat(durumOzeti.bugun_gelir || 0).toFixed(0)}
                 </Typography>
-                <Typography variant="caption">Gelir</Typography>
+                <Typography variant="body2" fontWeight="500">Gelir</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={4} sm={2.4}>
             <Card sx={{ 
-              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              background: '#d2a92fff',
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              borderRadius: 2,
+              boxShadow: '0 4px 12px rgba(210, 169, 47, 0.3)'
             }}>
-              <CardContent sx={{ py: 1.5, px: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
+              <CardContent sx={{ py: 2, px: 1.5 }}>
+                <Typography variant="h4" fontWeight="bold">
                   {durumOzeti.bekliyor || 0}
                 </Typography>
-                <Typography variant="caption">Bekliyor</Typography>
+                <Typography variant="body2" fontWeight="500">Bekliyor</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={4} sm={2.4}>
             <Card sx={{ 
-              background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+              background: '#d2a92fff',
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              borderRadius: 2,
+              boxShadow: '0 4px 12px rgba(210, 169, 47, 0.3)'
             }}>
-              <CardContent sx={{ py: 1.5, px: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
+              <CardContent sx={{ py: 2, px: 1.5 }}>
+                <Typography variant="h4" fontWeight="bold">
                   {durumOzeti.islemde || 0}
                 </Typography>
-                <Typography variant="caption">İşlemde</Typography>
+                <Typography variant="body2" fontWeight="500">İşlemde</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={4} sm={2.4}>
             <Card sx={{ 
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              background: '#d2a92fff',
               color: 'white',
-              textAlign: 'center'
+              textAlign: 'center',
+              borderRadius: 2,
+              boxShadow: '0 4px 12px rgba(210, 169, 47, 0.3)'
             }}>
-              <CardContent sx={{ py: 1.5, px: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
+              <CardContent sx={{ py: 2, px: 1.5 }}>
+                <Typography variant="h4" fontWeight="bold">
                   {durumOzeti.teslim || 0}
                 </Typography>
-                <Typography variant="caption">Teslim</Typography>
+                <Typography variant="body2" fontWeight="500">Teslim</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -165,7 +175,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="Yeni İşlem"
             icon={<CarIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#10b981"
+            color="#d2a92fff"
             path="/yeni-islem"
             onClick={() => navigate('/yeni-islem')}
           />
@@ -175,7 +185,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="İşlemler"
             icon={<BuildIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#3b82f6"
+            color="#d2a92fff"
             path="/islemler"
             onClick={() => navigate('/islemler')}
           />
@@ -185,7 +195,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="Borç Takip"
             icon={<PeopleIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#f59e0b"
+            color="#d2a92fff"
             path="/borc-takip"
             onClick={() => navigate('/borc-takip')}
           />
@@ -195,7 +205,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="Giderler"
             icon={<AssessmentIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#ef4444"
+            color="#d2a92fff"
             path="/giderler"
             onClick={() => navigate('/giderler')}
           />
@@ -205,7 +215,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="Hizmet Yönetimi"
             icon={<SettingsIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#8b5cf6"
+            color="#d2a92fff"
             path="/hizmetler"
             onClick={() => navigate('/hizmetler')}
           />
@@ -215,7 +225,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="Müşteri Listesi"
             icon={<ListIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#06b6d4"
+            color="#d2a92fff"
             path="/musteri-listesi"
             onClick={() => navigate('/musteri-listesi')}
           />
@@ -225,7 +235,7 @@ export default function Dashboard() {
           <QuickAccessButton
             title="Notlar"
             icon={<NotesIcon sx={{ color: 'white', fontSize: 56 }} />}
-            color="#6366f1"
+            color="#d2a92fff"
             path="/notlar"
             onClick={() => navigate('/notlar')}
           />

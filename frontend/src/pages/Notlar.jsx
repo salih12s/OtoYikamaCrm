@@ -214,7 +214,7 @@ export default function Notlar() {
                   </Typography>
                   
                   <Typography variant="caption" sx={{ color: '#666' }}>
-                    {new Date(not.guncelleme_tarihi).toLocaleString('tr-TR')}
+                    {new Date(not.guncelleme_tarihi + 'Z').toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' })}
                   </Typography>
                 </CardContent>
               </Card>

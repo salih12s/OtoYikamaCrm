@@ -1,6 +1,27 @@
-# 🚗 Oto Yıkama CRM Sistemi
+# 🦁 Lion Oto Yıkama CRM Sistemi
 
 Modern ve mobil uyumlu oto yıkama işletmesi yönetim sistemi. Müşteri takibi, işlem yönetimi, borç takibi ve detaylı raporlama özellikleri sunar. **Xiaomi 12 Pro 5G için özel olarak optimize edilmiştir.**
+
+---
+
+## 🎨 Tasarım ve Tema
+
+### Renk Paleti
+- **Ana Renk (Sarı)**: `#FFC107` - Parlak altın sarısı
+- **İkincil Renk**: `#FFD54F` - Açık sarı
+- **Arka Plan**: `#161616` - Koyu siyah
+- **Kart Renkleri**:
+  - **Bugün Araç**: `#D4A927` (Altın)
+  - **Gelir**: `#10B981` (Yeşil)
+  - **Bekliyor**: `#F97316` (Turuncu)
+  - **İşlemde**: `#06B6D4` (Mavi)
+  - **Teslim**: `#10B981` (Yeşil)
+
+### Logo
+- Sistemde özel Lion logo kullanılmaktadır
+- Logo dosyası: `public/Logo.jpg`
+- Login sayfasında 120x120px circular görüntü
+- Header'da logo ile birlikte "Lion Oto Yıkama" marka adı
 
 ---
 
@@ -8,9 +29,10 @@ Modern ve mobil uyumlu oto yıkama işletmesi yönetim sistemi. Müşteri takibi
 
 ### 🎯 Ana Özellikler
 - **Mobil Uyumlu Tasarım**: Xiaomi 12 Pro 5G için optimize edilmiş responsive arayüz
-- **Karanlık Tema**: Modern ve göz yormayan Material-UI dark mode
+- **Modern Karanlık Tema**: Sarı-Siyah renk paleti ile göz yormayan tasarım
 - **Türkçe Dil Desteği**: Tamamen Türkçe arayüz ve tarih formatları (Türkiye saat dilimi)
 - **Gerçek Zamanlı Güncellemeler**: Anında veri senkronizasyonu
+- **Görsel Dashboard**: Renkli kartlarla durum özeti
 
 ### 💼 İşlem Yönetimi
 - Hızlı yeni işlem kaydı
@@ -41,11 +63,40 @@ Modern ve mobil uyumlu oto yıkama işletmesi yönetim sistemi. Müşteri takibi
 - **Borç tutarına göre sıralama** (çok → az, az → çok)
 - **Tarih bazlı sıralama** (yeni → eski, eski → yeni)
 
-### 📊 Raporlama
-- **Bu Ayki Gelir**: Aylık toplam gelir ve işlem sayısı
-- **Günlük Gelir**: Seçilen tarih için günlük gelir, işlem sayısı ve ödeme yöntemleri dağılımı
-- **Tahsil Edilmedi**: Günlük tahsil edilmeyen tutar
-- **Haftalık Raporlar**: Son 7 günlük gelir tablosu
+### 📊 Raporlama ve Grafikler
+- **Dashboard Durum Kartları**: 
+  - Bugün Araç Sayısı (Sarı kart)
+  - Günlük Gelir (Yeşil kart)
+  - Bekleyen İşlem Sayısı (Turuncu kart)
+  - İşlemdeki Araç Sayısı (Mavi kart)
+  - Teslim Edilen Araç Sayısı (Yeşil kart)
+
+- **Aylık İstatistikler**:
+  - Aylık müşteri sayısı (o ay içinde işlem yapan)
+  - Aylık kazanç (geliş tarihine göre)
+  - API endpoint: `/api/istatistikler/aylik`
+
+- **Günlük Raporlar**: 
+  - Seçilen tarih için günlük gelir
+  - İşlem sayısı
+  - Ödeme yöntemleri dağılımı
+  - Tahsil edilmeyen tutar
+
+- **Haftalık Raporlar**: 
+  - Son 7 günlük gelir tablosu
+  - Günlük bazda karşılaştırma
+
+- **Aylık Grafik** (YENİ! 🎨):
+  - **İnteraktif çubuk grafik**: Son 12 ay kazanç trendi
+  - **Hover efektleri**: Çubuğun üzerine gelindiğinde detaylı bilgi
+  - **3 özet kart**:
+    - 💰 Toplam Kazanç (Yeşil)
+    - 👥 Toplam Müşteri (Sarı)
+    - 📊 Aylık Ortalama Kazanç (Mavi)
+  - **Animasyonlu çubuklar**: Gradient renkli, gölgeli, hover'da büyüme efekti
+  - **Müşteri sayısı**: Her ay için müşteri ikonu ile gösterim
+  - **Detay tablosu**: Ay bazında kazanç ve müşteri detayları
+
 - **Gider Yönetimi**: 
   - 8 kategori (Elektrik, Su, Doğalgaz, Kira, Maaş, Temizlik Malzemeleri, Bakım-Onarım, Diğer)
   - Gider ekleme/düzenleme/silme
@@ -158,24 +209,189 @@ Proje Railway platformunda deploy edilebilir. Detaylı talimatlar için [RAILWAY
 
 ## 📱 Kullanım Kılavuzu
 
-### Ana Ekran (Dashboard)
-6 ana menü butonu:
+### 🔐 Giriş Bilgileri
+- **Kullanıcı Adı**: `Göktuğ33`
+- **Şifre**: `Göktuğ123456`
+
+### 🏠 Ana Ekran (Dashboard)
+
+Dashboard'da 5 durum kartı ve 8 ana menü butonu bulunur:
+
+**Durum Kartları (Renkli)**:
+1. **Bugün Araç** (Sarı - #D4A927): Bugün işlem gören araç sayısı
+2. **Gelir** (Yeşil - #10B981): Bugünkü toplam gelir (₺)
+3. **Bekliyor** (Turuncu - #F97316): Bekleyen işlem sayısı
+4. **İşlemde** (Mavi - #06B6D4): İşlemdeki araç sayısı
+5. **Teslim** (Yeşil - #10B981): Teslim edilen araç sayısı
+
+**Ana Menü Butonları** (Sarı kenarlıklı):
 - **Yeni İşlem**: Hızlı işlem kaydı
 - **İşlemler**: Tüm işlemleri görüntüle ve yönet
 - **Borç Takip**: Borçlu müşterileri takip et
-- **Raporlar**: Gelir ve gider raporları
+- **Giderler**: Gider kayıtları
 - **Hizmet Yönetimi**: Hizmet türlerini yönet
 - **Müşteri Listesi**: Tüm müşterileri görüntüle
+- **Notlar**: Not defteri
+- **Raporlar**: Gelir/gider grafikleri ve detaylı raporlar
 
-### Yeni İşlem Ekleme
-1. Müşteri bilgilerini girin (opsiyonel)
-2. Plaka numarasını girin (zorunlu)
-3. Araç bilgilerini girin
-4. Hizmet türünü seçin
-5. Tutar ve ödeme bilgilerini girin
-6. Kaydet
+### 📝 Yeni İşlem Ekleme
+1. Dashboard'dan "Yeni İşlem" butonuna tıklayın
+2. Müşteri bilgilerini girin (opsiyonel - boş bırakılabilir)
+3. Plaka numarasını girin (zorunlu - büyük harfe otomatik dönüşür)
+4. Araç markası ve modelini girin
+5. Hizmet türünü seçin (açılır liste)
+6. Tutar girin
+7. Ödenen tutarı girin (kısmi ödeme için farklı girebilirsiniz)
+8. Ödeme yöntemini seçin (Nakit, Kredi Kartı, Banka Transferi)
+9. Durum seçin (Bekliyor, İşlemde, Teslim Edildi)
+10. Not ekleyin (opsiyonel)
+11. "İşlem Kaydet" butonuna tıklayın
 
-### Borç Ödeme Alma
+**Özellikler**:
+- Plaka otomatik büyük harfe dönüşür
+- Kısmi ödeme durumunda otomatik borç hesaplanır
+- Müşteri bilgileri veritabanında kaydedilir
+- Aynı plaka için işlem geçmişi tutulur
+
+### 💼 İşlemler Sayfası
+**Arama ve Filtreleme**:
+- 🔍 Plaka, müşteri adı veya notlara göre arama
+- 📋 Duruma göre filtreleme (Tümü, Bekliyor, İşlemde, Teslim Edildi)
+
+**İşlem Detayları**:
+- Plaka numarası (tıklanabilir - detay gösterir)
+- Müşteri adı
+- Araç bilgisi (marka/model)
+- Hizmet türü
+- Tutar ve ödenen miktar
+- Borç durumu (varsa kırmızı)
+- Ödeme yöntemi
+- İşlem durumu (renkli chip)
+- Tarih ve saat
+
+**İşlemler**:
+- ✏️ Düzenle: İşlem bilgilerini güncelle
+- 🗑️ Sil: İşlemi tamamen sil (onay ister)
+
+### 👥 Müşteri Listesi
+
+**Üst Özet Kartlar** (6 adet):
+1. **Toplam Müşteri**: Kayıtlı müşteri sayısı
+2. **Toplam Harcama**: Tüm müşterilerin toplam harcaması
+3. **Toplam Borç**: Tüm borçların toplamı
+4. **Borçlu Sayısı**: Borcu olan müşteri sayısı
+5. **Aylık Müşteri**: Bu ay işlem yapan müşteri sayısı
+6. **Aylık Kazanç**: Bu ay toplam kazanç
+
+**Müşteri Tablosu** (Mobil Optimize):
+- Plaka numarası
+- Toplam gelir (müşterinin toplam harcaması)
+- Borç (varsa kırmızı renkte)
+- Kayıt tarihi
+
+**Arama**: Plaka veya müşteri adına göre arama
+
+### 💰 Borç Takip Sistemi
+
+**Özet Bilgiler**:
+- Toplam borçlu müşteri sayısı
+- Toplam borç miktarı
+- Ortalama borç tutarı
+
+**Borçlu Müşteri Listesi**:
+- Müşteri adı
+- Plaka numarası
+- Toplam borç (kırmızı)
+- Ödeme Al butonu
+
+**Ödeme Alma İşlemi**:
+1. "Ödeme Al" butonuna tıklayın
+2. Ödeme tutarını girin (tam veya kısmi)
+3. Ödeme yöntemini seçin
+4. "Ödeme Al" butonuna tıklayın
+5. Borç otomatik güncellenir
+
+**Sıralama Seçenekleri**:
+- Borç Çok → Az
+- Borç Az → Çok
+- Tarih Yeni → Eski
+- Tarih Eski → Yeni
+
+### 📊 Raporlar Sayfası
+
+**4 Ana Tab**:
+
+#### 1. **Günlük Rapor** 📅
+- Tarih seçici ile istediğiniz günü seçin
+- **Bu Ayki Gelir Kartı**: Mavi kart, toplam aylık gelir ve işlem sayısı
+- **Günlük İstatistikler**:
+  - Toplam gelir
+  - İşlem sayısı
+  - Tahsil edilmeyen tutar (borç)
+- **Ödeme Yöntemleri**: Nakit, Kart, Havale dağılımı
+- **Hizmet Dağılımı**: Hangi hizmet kaç kere kullanıldı
+
+#### 2. **Haftalık Rapor** 📈
+- Son 7 günün gelir tablosu
+- Günlük bazda karşılaştırma
+- Toplam haftalık gelir
+
+#### 3. **Giderler** 💸
+- **Gider Kategorileri**:
+  - Elektrik
+  - Su
+  - Doğalgaz
+  - Kira
+  - Maaş
+  - Temizlik Malzemeleri
+  - Bakım-Onarım
+  - Diğer
+
+- **İşlemler**:
+  - ➕ Yeni Gider Ekle
+  - ✏️ Gider Düzenle
+  - 🗑️ Gider Sil
+
+- **Gider Özeti**: Kategori bazında toplam giderler
+
+#### 4. **Aylık Grafik** 📊 (YENİ!)
+**3 Özet Kart**:
+1. 💰 **Toplam Kazanç** (Yeşil kart): Son 12 ayın toplam kazancı
+2. 👥 **Toplam Müşteri** (Sarı kart): Son 12 ayda işlem yapan müşteri sayısı
+3. 📊 **Aylık Ortalama** (Mavi kart): Ay başına ortalama kazanç
+
+**İnteraktif Çubuk Grafik**:
+- Son 12 ayın kazanç trendi
+- Her çubuk bir ayı temsil eder
+- Çubuğun üzerine fare ile gelindiğinde:
+  - Tam kazanç miktarı görünür (tooltip)
+  - Çubuk büyür (animasyon)
+  - Gölge efekti artar
+- Çubuk renkleri: Sarı gradient (#FFC107 → #FFD54F)
+- Alt kısımda ay ismi (Oca, Şub, Mar...)
+- Alt kısımda müşteri sayısı (👤 ikonu ile)
+
+**Detay Tablosu**:
+- Ay adı (Ocak 2025, Kasım 2024...)
+- Kazanç (₺ ile, sarı chip)
+- Müşteri sayısı (gri chip)
+
+**Grafik Özellikleri**:
+- Hover efekti ile interaktif
+- Gradient renkli çubuklar
+- Gölge efektleri
+- Smooth animasyonlar
+- Mobil uyumlu (küçük ekranlarda da düzgün görünür)
+
+### 🔧 Hizmet Yönetimi
+1. "Hizmet Yönetimi" sayfasına gidin
+2. Yeni hizmet ekle: Hizmet adı girin
+3. Hizmetleri düzenle veya sil
+4. Aktif/pasif durumu yönet
+
+### 📝 Notlar
+- Not ekle/düzenle/sil
+- Basit not defteri özelliği
 1. Borç Takip sayfasına git
 2. Borçlu müşteriyi bul
 3. "Ödeme Al" butonuna tıkla
@@ -200,6 +416,83 @@ Proje Railway platformunda deploy edilebilir. Detaylı talimatlar için [RAILWAY
 
 ---
 
+## 🎨 Kullanıcı Arayüzü Özellikleri
+
+### Dashboard Kartlar
+- **Düz Renk Tasarım**: Gradient yerine solid renkler
+- **Büyük Sayılar**: h4 variant ile belirgin gösterim
+- **Gölge Efektleri**: Her kart kendi renginde gölge
+- **Border Radius**: 8px yuvarlatılmış köşeler
+
+### Grafik Özellikleri
+- **Smooth Animations**: cubic-bezier(0.4, 0, 0.2, 1) timing function
+- **Hover Tooltip**: ::after pseudo-element ile popup bilgi
+- **Gradient Bars**: 3 renkli gradient (#FFC107 → #D4A927 → #FFD54F)
+- **Box Shadow**: Sarı gölgeler ile derinlik efekti
+- **Transform Effects**: Scale ve translate ile interaktif deneyim
+
+### Renk Sistemi
+```css
+Sarı Palette:
+- Ana: #FFC107 (Bright Amber)
+- Koyu: #D4A927 (Dark Gold)
+- Açık: #FFD54F (Light Yellow)
+
+Yeşil: #10B981 (Emerald)
+Turuncu: #F97316 (Orange)
+Mavi: #06B6D4 (Cyan)
+Siyah: #161616 (Near Black)
+Kart Arka Plan: #1a1a1a (Dark Gray)
+```
+
+---
+
+## 📊 API Endpoints
+
+### İstatistikler
+- `GET /api/istatistikler/aylik`: Aylık kazanç ve müşteri istatistikleri
+  ```json
+  {
+    "aylik": {
+      "musteri_sayisi": 25,
+      "kazanc": "15420.00"
+    },
+    "grafik": [
+      {
+        "ay": "2024-12",
+        "musteri_sayisi": 25,
+        "kazanc": "15420.00"
+      }
+    ]
+  }
+  ```
+
+### Müşteriler
+- `GET /api/musteriler`: Tüm müşteri listesi (plaka, gelir, borç, tarih)
+- `POST /api/musteriler`: Yeni müşteri ekle
+- `PUT /api/musteriler/:id`: Müşteri güncelle
+- `DELETE /api/musteriler/:id`: Müşteri sil
+
+### İşlemler
+- `GET /api/islemler`: Tüm işlemler
+- `POST /api/islemler`: Yeni işlem ekle
+- `PUT /api/islemler/:id`: İşlem güncelle
+- `DELETE /api/islemler/:id`: İşlem sil
+
+### Raporlar
+- `GET /api/raporlar/gunluk/:tarih`: Günlük rapor
+- `GET /api/raporlar/haftalik`: Haftalık rapor
+- `GET /api/raporlar/dashboard`: Dashboard özet verileri
+
+### Giderler
+- `GET /api/giderler`: Tüm giderler
+- `GET /api/giderler/ozet`: Kategori bazlı özet
+- `POST /api/giderler`: Yeni gider ekle
+- `PUT /api/giderler/:id`: Gider güncelle
+- `DELETE /api/giderler/:id`: Gider sil
+
+---
+
 ## 📞 İletişim
 
 **GitHub**: [salih12s](https://github.com/salih12s)  
@@ -214,6 +507,20 @@ Bu proje özel kullanım için geliştirilmiştir.
 ---
 
 ## 🔄 Versiyon Geçmişi
+
+### v2.0.0 (15 Aralık 2025) 🎉
+- ✅ **Yeni Tema**: Sarı-Siyah renk paleti (#FFC107, #161616)
+- ✅ **Logo Entegrasyonu**: Lion logo eklendi
+- ✅ **Sistem Adı**: "Lion Oto Yıkama" olarak güncellendi
+- ✅ **Dashboard Kartları**: Düz renkli, modern tasarım
+- ✅ **Aylık Grafik**: İnteraktif çubuk grafik sistemi
+- ✅ **Hover Efektleri**: Tooltip ve animasyonlar
+- ✅ **3 Özet Kart**: Toplam kazanç, müşteri, ortalama
+- ✅ **Gradient Çubuklar**: 3 renkli gradient sistemleri
+- ✅ **Gölge Efektleri**: Box-shadow ile derinlik
+- ✅ **Mobil Optimizasyon**: Müşteri listesi ultra-compact
+- ✅ **API Endpoint**: /api/istatistikler/aylik eklendi
+- ✅ **Not Arama**: İşlemler sayfasında nota göre arama
 
 ### v1.0.0 (17 Kasım 2025)
 - ✅ İlk versiyon yayınlandı
@@ -255,42 +562,161 @@ Bu proje özel kullanım için geliştirilmiştir.
 
 ## 🎯 Gelecek Özellikler
 
-- [ ] Kullanıcı giriş sistemi
+- [ ] Kullanıcı giriş sistemi (çoklu kullanıcı)
 - [ ] Çoklu şube desteği
 - [ ] SMS/Email bildirimleri
 - [ ] QR kod ile müşteri takibi
 - [ ] Mobil uygulama (React Native)
 - [ ] Excel/PDF rapor dışa aktarma
-- [ ] Stok yönetimi
+- [ ] Stok yönetimi (malzeme takibi)
 - [ ] Personel takip sistemi
 - [ ] Randevu sistemi
 - [ ] Otomatik SMS hatırlatıcılar
+- [ ] Kamera ile plaka okuma
+- [ ] Online ödeme entegrasyonu
+- [ ] Müşteri sadakat programı
+- [ ] Kampanya yönetimi
+
+---
+
+## 💡 Öne Çıkan Özellikler
+
+### 🎨 Modern Grafik Sistemi
+- **Interaktif Çubuklar**: Hover ile detay görüntüleme
+- **Smooth Animasyonlar**: 0.4s cubic-bezier geçişler
+- **Gradient Renkler**: 3 tonlu sarı gradientler
+- **Tooltip Sistemi**: ::after pseudo-element ile bilgi kutuları
+- **Responsive Tasarım**: Mobilde de mükemmel görünüm
+
+### 📊 Gelişmiş İstatistikler
+- **Aylık Trend**: Son 12 ayın görsel analizi
+- **Müşteri Metriği**: Ay bazında müşteri sayısı takibi
+- **Ortalama Hesapları**: Otomatik ortalama kazanç
+- **Renk Kodlaması**: Yeşil (kazanç), Sarı (müşteri), Mavi (ortalama)
+
+### 🎯 Dashboard Kartlar Sistemi
+```javascript
+Kart Yapısı:
+- Solid Renkler (gradient yok)
+- Box Shadow (0 4px 12px rgba)
+- Border Radius 8px
+- Padding 16px (py: 2, px: 1.5)
+- Typography h4 (sayılar için)
+- Typography body2 (etiketler için)
+```
+
+### 🖼️ Logo ve Branding
+- **Logo Konumu**: Login + Header
+- **Logo Boyutu**: 120x120px (login), küçük (header)
+- **Border Radius**: Circular (50%)
+- **Marka Rengi**: #FFC107 (Sarı)
+- **Marka Adı**: "Lion Oto Yıkama"
+
+---
+
+## 📱 Mobil Optimizasyon Detayları
+
+### Müşteri Listesi Tablosu
+```css
+Compact Tasarım:
+- Padding: py: 0.5, px: 1
+- Font Size: 10-13px
+- Line Height: 1.2
+- Max Width: 480px
+- 4 Sütun: Plaka, Gelir, Borç, Kayıt
+```
+
+### Dashboard Kartlar
+```css
+Grid Sistemi:
+- xs: 6 (Bugün Araç, Gelir)
+- xs: 4 (Bekliyor, İşlemde, Teslim)
+- sm: 2.4 (tüm kartlar)
+- spacing: 1 (8px gap)
+```
+
+### Grafik
+```css
+Responsive Boyutlar:
+- Height: 320px
+- Max Width per bar: 60px
+- Gap: 0.5 (4px)
+- Padding: { xs: 1, sm: 2 }
+```
+
+---
+
+## 🔧 Teknik Detaylar
+
+### SQL Sorgular
+
+**Aylık İstatistik Query**:
+```sql
+SELECT 
+  COUNT(DISTINCT musteri_id) as musteri_sayisi,
+  COALESCE(SUM(odenen), 0) as kazanc
+FROM arac_islemler
+WHERE DATE_TRUNC('month', gelis_tarihi AT TIME ZONE 'Europe/Istanbul') 
+  = DATE_TRUNC('month', CURRENT_DATE AT TIME ZONE 'Europe/Istanbul')
+```
+
+**12 Aylık Grafik Query**:
+```sql
+SELECT 
+  TO_CHAR(DATE_TRUNC('month', gelis_tarihi), 'YYYY-MM') as ay,
+  COUNT(DISTINCT musteri_id) as musteri_sayisi,
+  COALESCE(SUM(odenen), 0) as kazanc
+FROM arac_islemler
+WHERE gelis_tarihi >= CURRENT_DATE - INTERVAL '11 months'
+GROUP BY DATE_TRUNC('month', gelis_tarihi)
+ORDER BY ay
+```
+
+### React Hooks Kullanımı
+```javascript
+// Grafik data fetch
+const loadReports = useCallback(async () => {
+  const grafikRes = await istatistikler.aylik();
+  setGrafikData(grafikRes.data.grafik || []);
+}, [tabValue]);
+
+useEffect(() => {
+  loadReports();
+}, [loadReports]);
+```
+
+### CSS-in-JS (Material-UI sx prop)
+```javascript
+// Gradient çubuk örneği
+sx={{
+  background: 'linear-gradient(180deg, #FFC107 0%, #D4A927 50%, #FFD54F 100%)',
+  borderRadius: '8px 8px 0 0',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  '&:hover': {
+    transform: 'scaleY(1.08) scaleX(1.1)',
+    boxShadow: '0 8px 24px rgba(255, 193, 7, 0.7)'
+  }
+}}
+```
 
 ---
 
 **Not**: Bu proje aktif olarak geliştirilmektedir. Önerileriniz için issue açabilirsiniz.
 
-#### 1. **Dashboard (Ana Sayfa)**
-- **Anlık Veriler:**
-  - 💰 Bugünkü gelir ve işlem sayısı
-  - 📅 Bu ayın toplam geliri ve işlem sayısı
-  - ⏳ Bekleyen işlem sayısı
-  - ⚠️ Toplam tahsil edilmemiş borç
+---
 
-- **Görselleştirme:**
-  - Renkli kartlar
-  - İkonlu gösterimler
-  - Hızlı özet bilgiler
+## 📚 Ek Kaynaklar
 
-#### 2. **Günlük Rapor**
-- **Detaylı Analiz:**
-  - Seçilen tarihe göre rapor
-  - Toplam işlem sayısı
-  - Toplam gelir
-  - Toplam borç
-  
-- **Hizmet Dağılımı:**
-  - Hangi hizmet kaç kez kullanıldı
+- [Material-UI Documentation](https://mui.com/)
+- [React Router Documentation](https://reactrouter.com/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Express.js Guide](https://expressjs.com/)
+
+---
+
+## 🙏 Teşekkürler
+
+Bu proje modern web teknolojileri ve en iyi pratikler kullanılarak geliştirilmiştir. Katkılarınız ve geri bildirimleriniz için teşekkür ederiz!
   - Hizmet başına gelir
   - Tablo formatında görünüm
 
