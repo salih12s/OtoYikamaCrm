@@ -148,7 +148,6 @@ app.get('/api/islemler', async (req, res) => {
              notlar, durum, gelis_tarihi
       FROM arac_islemler
       ORDER BY gelis_tarihi DESC
-      LIMIT 100
     `);
     res.json(result.rows);
   } catch (error) {
